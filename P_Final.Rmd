@@ -217,12 +217,38 @@ LeerFicheroDigital <- function(ruta) {
   
 }
 
+ObData <- function(ruta){
+  CaDi <- LeerCabDig(ruta)
+  DfDigital <- LeerFicheroDigital(ruta)
+
+  CaAna <- LeerCabAna(ruta)
+  DfAna <- LeerFicheroDigital(ruta)
+  
+  return(list(CaDi,DfDigital, CaAna, DfAna))
+} 
+
 ```
 
 Ahora procederemos a leer los ficheros de la carpeta data
 
 ```{r}
+#Declaramos las rutas donde estan los datos de los pacientes
+rutas <- c("data/0519xxxiii14/06_02_2023/14.20.34",
+           "data/0795xalvii8a7/27_09_2022/10.11.00",
+           "data/0795xalvii8a7/27_09_2022/10.11.12",
+           "data/1059xlxveei79_ECGf2/27_09_2022/14.42.29_III_ECGyEXTyRESTO",
+           "data/ecg5_210xlxi81_IP_39_eBR_BRP_720/12.31.15",
+           "data/ecg5_210xlxi81_IP_39_eBR_BRP_720/12.49.57"
+           )
 
+#Ahora obtenemos los datos de cada paciente.
+
+Pas1 <- ObData(rutas[1])
+Pas2 <- ObData(rutas[2])
+Pas3 <- ObData(rutas[3])
+Pas4 <- ObData(rutas[4])
+Pas5 <- ObData(rutas[5])
+Pas6 <- ObData(rutas[6])
 
 ```
 
