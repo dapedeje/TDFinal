@@ -223,6 +223,7 @@ Ahora procederemos a leer los ficheros de la carpeta data
 
 ```{r}
 
+
 ```
 
 
