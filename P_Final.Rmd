@@ -197,7 +197,7 @@ LeerFicheroAnalogico <- function(ruta) {
 }
 
 LeerFicheroDigital <- function(ruta) {
-  #Declaramos el nombre de las varibles
+  #Declaramos el nombre de las varibles.
   NVar <- c("HR1", "HR2", "MHR",
             "TOCO", "SPO2",
             "VCP", "Ps",
