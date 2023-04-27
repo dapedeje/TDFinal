@@ -143,5 +143,42 @@ LeerCabDig <- function(ruta) {
   return(Cab) #Devolvemos el data frame
   
 }
+
+LeerCabAna <- function(ruta) {
+  #Declaramos el nombre de las varibles
+  NomVar <- c(
+    "Dia",
+    "Mes",
+    "Anyo",
+    "Hor",
+    "Min",
+    "Seg",
+    "ResolADC",
+    "VolatageMax",
+    "VoltageMin",
+    "FrecMuestreo"
+  )
+  #Como en el caso anterior usamos el mismo metodo para leer el fichero
+  RD <- file.path(ruta, "cabecera_FicheroAnalogico.dat")
+  Fich <- file(RD, "rb")
+  #Similar a lo de antes, pero cambia un poco, ya que el fichero, pero debemos
+  #de tener en cuenta que los datos tiene un formato un poco peculiar
+  CabA1 <- readBin(Fich,what = integer(),
+                   signed = F,n = 7,#las 7 primeras variables deben de leerser primero
+                   size = 1)#Esto se guardan en un byte
+  CabA2 <- readBin(Fich,what = integer(),
+                   n = 3,#El resto de variables tienen el otro formato
+                   size = 2)#se almacenan en 2 bytes(16 bits)
+  Cab <- data.frame(matrix(c(CabA1, CabA2), #Concatenamos las dos y generamos un data frame
+                           nrow = 1))
+  
+  
+  names(Cab) <- NomVar #Cambiamos el nombre de las varibles
+  
+  
+  close(Fich) #Cerramos el fichero
+  
+  return(Cab) #Devolvemos el data frame
+}
 ```
 
