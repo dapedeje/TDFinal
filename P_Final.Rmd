@@ -1,11 +1,7 @@
 ---
-# El segmento entre --- se denomina cabecera YALM y determina el formato y tipo de documento generado
-# Las opciones dependen del tipo de documento que se quiera generar
-# Ver https://bookdown.org/yihui/rmarkdown/ 
-
-title: "Pon un título a tu documento"
+title: "Trabajo final"
 subtitle: Tratamiento de Datos. Grado en Ciencia de Datos- UV
-author: "Pon aquí tu nombre y apellidos"
+author: "Equipo H"
 #Pone la fecha de generación del documento
 date:  "`r Sys.Date()`"  #Pondría la fecha del día actual
 # Para que en lugar de "Contents" ponga "Indice" al incluir la tabla de contenido
