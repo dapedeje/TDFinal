@@ -105,3 +105,43 @@ search()
 ```
 
 #Leer ficheros binarios
+
+En este apartado tenemos las funciones que nos permitiran leer los ficheros binarios usando la ruta
+
+```{r}
+LeerCabDig <- function(ruta) {
+  #Nombramos las varibles que debe tener esta cabezera
+  NomVar <- c("Dia",
+              "Mes",
+              "Anyo",
+              "Hor",
+              "Min",
+              "Seg",
+              "FrecMuestreo",
+              "NumCanales")
+  #Usamos file.path para añadir el nombre de fichero que nos interesa leer
+  RD <- file.path(ruta, "cabecera_FicheroDigital.dat")
+  
+  #Creamos la varible que nos permita conectar con el fichero
+  FichD <- file(RD, "rb")#rb es usado para indicar que es binario
+  #Leemos la línea
+  CabDigi <- readBin(
+    FichD,
+    what = integer(),
+    signed = F, #indicamos que los datos son sin signo
+    n = 8, #Se tratan de 8 varibles
+    size = 1 #Como los datos son almacenados en 8bits lo que es 1 byte, por lo tanto size debe ser 1
+  )
+  Cab <- data.frame(t(CabDigi)) #Creamos un dataframe con los datos de la cabecera
+  
+  
+  names(Cab) <- NomVar #Cambiamos los nombres
+  
+  close(FichD) #Cerramos el fichero
+  
+  
+  return(Cab) #Devolvemos el data frame
+  
+}
+```
+
