@@ -104,3 +104,4 @@ search()
 
 ```
 
+#Leer ficheros binarios
