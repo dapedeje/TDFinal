@@ -49,24 +49,12 @@ language:
 
 # Introducción
 
+En este fichero vamos analizar los datos pacientes que han usado un electro cardiograma
+
 
 # Configuración del los bloques (*Chunks*)
 
-Cada bloque tiene muchos parámetros que pueden ser configurados
-
-**include** = **FALSE** evita que el código y los resultados aparezcan en el archivo terminado. R Markdown aún ejecuta el código en el fragmento y los resultados pueden ser utilizados por otros fragmentos.
-
-**echo = FALSE** evita que el código, pero no los resultados, aparezcan en el archivo terminado. Esta es una manera útil de incrustar figuras.
-
-**message = FALSE** evita que los mensajes generados por el código aparezcan en el archivo finalizado.
-
-**warning = FALSE** evita que las advertencias generadas por el código aparezcan en el final.
-
-**fig.cap = "..."** agrega un título a los resultados gráficos.
-
-Se pueden especificicar opciones generales por defecto en *opts_chunk\$set*
-
-Más opciones en el enlace [\<https://bookdown.org/yihui/rmarkdown/\>](https://bookdown.org/yihui/rmarkdown/){.uri}
+Configuramos los bloques de código.
 
 ```{r setup, cache = F, echo = F, message = F, warning = F, tidy = F}
 
@@ -93,9 +81,7 @@ knit_hooks$set(inline = function(x) {
 
 # Instalación automática de paquetes
 
-Especificar las librerías necesarias para ejecutar el código en la variable ***packages***. Si no está instaladas, se instalarán y cargarán (solo para aquellas que están en el repositorio <http://cran.rediris.es>)
-
-El siguiente bloque, al no especificar opciones del *chunk* usa la configuración por defecto.
+Tenemos esta parte para instalar los paquetes necesarios si es que el usuario no los tiene.
 
 ```{r}
 
