@@ -180,5 +180,42 @@ LeerCabAna <- function(ruta) {
   
   return(Cab) #Devolvemos el data frame
 }
+
+LeerFicheroAnalogico <- function(ruta) {
+  Nvar <- "mv" #Nombre de la varible
+  #Leemos el fichero usando el procedimeinto habitual
+  RD <- file.path(ruta, "ficheroAnalogico.dat")
+  N <- file.size(RD)
+  fich <- file(RD, "rb")
+  #Leemos todo el fichero con los datos en formato de 2 bits
+  ContFich <- readBin(fich,what = integer(),
+                      n = N,size = 2, signed = F)
+  Cont <- data.frame(ContFich) #Creamos un dataframe
+  names(Cont) <- Nvar #Cambiamos el nombre
+  close(fich) #Cerramos fichero
+  return(Cont) #Devolvemos el dataframe
+}
+
+LeerFicheroDigital <- function(ruta) {
+  #Declaramos el nombre de las varibles
+  NVar <- c("HR1", "HR2", "MHR",
+            "TOCO", "SPO2",
+            "VCP", "Ps",
+            "Pd", "Pm")
+  #Hacemos el procedimiento habitual
+  RD <- file.path(ruta, "ficheroDigital.dat")
+  fich <- file(RD, "rb")
+  N <- file.size(RD) #Obtenemos el tamaño del fichero para poder leerlo todo
+  
+  ContFich <- readBin(fich,what = integer(),
+                      n = N , size = 1, signed = F)#Leemos todo, y los datos son en formato de 1 bits
+  cont <-data.frame(matrix(ContFich, ncol = length(NVar), 
+                           byrow = T))
+  names(cont) <- NVar #Cabiamos el nombre de las variables
+  close(fich)
+  return(cont) #Devolvemos el data frame
+  
+}
+
 ```
 
