@@ -233,12 +233,12 @@ Ahora procederemos a leer los ficheros de la carpeta data
 
 ```{r}
 #Declaramos las rutas donde estan los datos de los pacientes
-rutas <- c("data/0519xxxiii14/06_02_2023/14.20.34",
-           "data/0795xalvii8a7/27_09_2022/10.11.00",
-           "data/0795xalvii8a7/27_09_2022/10.11.12",
-           "data/1059xlxveei79_ECGf2/27_09_2022/14.42.29_III_ECGyEXTyRESTO",
-           "data/ecg5_210xlxi81_IP_39_eBR_BRP_720/12.31.15",
-           "data/ecg5_210xlxi81_IP_39_eBR_BRP_720/12.49.57"
+rutas <- c("data/data/0519xxxiii14/06_02_2023/14.20.34",
+           "data/data/0795xalvii8a7/27_09_2022/10.11.00",
+           "data/data/0795xalvii8a7/27_09_2022/10.11.12",
+           "data/data/1059xlxveei79_ECGf2/27_09_2022/14.42.29_III_ECGyEXTyRESTO",
+           "data/data/ecg5_210xlxi81_IP_39_eBR_BRP_720/12.31.15",
+           "data/data/ecg5_210xlxi81_IP_39_eBR_BRP_720/12.49.57"
            )
 
 #Ahora obtenemos los datos de cada paciente.
@@ -251,5 +251,150 @@ Pas5 <- ObData(rutas[5])
 Pas6 <- ObData(rutas[6])
 
 ```
+Ahora vamos a unirlo todo:
+
+```{r}
+
+Pas1[[2]] #Podemos ver que el dataframe del paciente 1 tiene varias muestras por lo que para este caso podemos ver que podemos usar la media para representar cada una de las variables
+
+#Usaremos la media para crear el df que usaremos, ya que así será más facil hacer los gráficos
+summary(Pas1[[2]])
+summary(Pas1[[4]])
+
+summary(Pas2[[2]])
+summary(Pas2[[4]])
+
+summary(Pas3[[2]])
+summary(Pas3[[4]])
+
+summary(Pas4[[2]])
+summary(Pas4[[4]])
+
+summary(Pas5[[2]])
+summary(Pas5[[4]])
+
+summary(Pas6[[2]])
+summary(Pas6[[4]])
+
+res1 <- Pas1[[2]] %>% 
+  summarise(across(everything(), mean))
+res1
+res1_2 <-  Pas1[[4]] %>% 
+  summarise(across(everything(), mean))
+res1_2
+
+res1_3 <- Pas1[[1]]
+res1_3
+
+res1_4 <- Pas1[[3]]
+res1_4
+
+pas1 <- data.frame(res1,res1_2,res1_3, res1_4[7:10])
+pas1
+
+#Ahora hacemos lo mismo con cada paciente
+#pas2
+#Obtenemos las media
+res2 <- Pas2[[2]] %>% 
+  summarise(across(everything(), mean))
+res2
+res2_2 <-  Pas2[[4]] %>% 
+  summarise(across(everything(), mean)) 
+res2_2
+
+res2_3 <- Pas2[[1]]
+res2_3
+
+res2_4 <- Pas2[[3]]
+res2_4
+
+pas2 <- data.frame(res2,res2_2,res2_3, res2_4[7:10]) #Creamos el df
+pas2
+
+#Pas 3
+
+res3 <- Pas3[[2]] %>% 
+  summarise(across(everything(), mean))
+res3
+res3_2 <-  Pas3[[4]] %>% 
+  summarise(across(everything(), mean))
+res3_2
+
+res3_3 <- Pas3[[1]]
+res3_3
+
+res3_4 <- Pas3[[3]]
+res3_4
+
+pas3 <- data.frame(res3,res3_2,res3_3, res3_4[7:10])#Creamos el df
+pas3
+
+#Pas 4
+
+res4 <- Pas4[[2]] %>% 
+  summarise(across(everything(), mean))
+res4
+res4_2 <-  Pas4[[4]] %>% 
+  summarise(across(everything(), mean))
+res4_2
+
+res4_3 <- Pas4[[1]]
+res4_3
+
+res4_4 <- Pas4[[3]]
+res4_4
+
+pas4 <- data.frame(res4,res4_2,res4_3, res4_4[7:10]) #Creamos el df
+pas4
+
+#Pas 5
+
+res5 <- Pas5[[2]] %>% 
+  summarise(across(everything(), mean))
+res5
+res5_2 <-  Pas5[[4]] %>% 
+  summarise(across(everything(), mean))
+res5_2
+
+res5_3 <- Pas5[[1]]
+res5_3
+
+res5_4 <- Pas5[[3]]
+res5_4
+
+pas5 <- data.frame(res5,res5_2,res5_3, res5_4[7:10]) #Creamos el df
+pas5
+
+#Pas 6
+
+res6 <- Pas6[[2]] %>% 
+  summarise(across(everything(), mean)) #Obtenemos las media
+res6
+res6_2 <-  Pas6[[4]] %>% 
+  summarise(across(everything(), mean))
+res6_2
+
+res6_3 <- Pas6[[1]]
+res6_3
+
+res6_4 <- Pas6[[3]]
+res6_4
+
+pas6 <- data.frame(res6,res6_2,res6_3, res6_4[7:10]) #Creamos el df
+pas6
+
+
+df <-rbind(pas1,pas2,pas3,pas4,pas5,pas6) #Creamos el df definitivo
+df 
+
+#Por ultimo uniremos los registros para crear fecha y hora
+df$Fecha <- paste(df$Dia, df$Mes, df$Anyo, sep = "/") #Usamos paste para crear la varible fecha
+df$Hora <- paste(df$Hor, df$Min, df$Seg, sep = ":") #Usamos paste para crear la varible hora
+df <- df %>%
+  select(-c(Dia, Mes, Anyo, Hor, Min, Seg)) #Quitamos las variables que ya nos sirven
+df
+
+```
+
 
 
