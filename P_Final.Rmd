@@ -421,8 +421,6 @@ madm <- function(x, na.rm = T) {
 
 # Regla 3 sigma
 reglasigma <- function(x,na.rm = T) { 
-  rest1 <- Estadisticos(x)[1]
-  rest2 <-Estadisticos(x)[3]
   return(x < rest1 - 3*madm(x) | x > rest1 + 3 * rest2)
   }
 
