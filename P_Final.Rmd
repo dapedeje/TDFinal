@@ -282,6 +282,7 @@ tiempo <- CrearTiempoAna(Datos_Ana)
 #Añadimos la variable tiempo a nuestro df de datos Analogicos
 Datos_Ana <- Datos_Ana %>% mutate(tiempo = tiempo)
 ```
+
 Ahora vamos a unirlo todo:
 
 ```{r}
@@ -313,6 +314,11 @@ g <- ggplot(Datos_Ana_9, aes(x = tiempo, y = mv)) +
 ggplotly(g)
 
 #Vemos que los resultados concuerdan con el modelo proporcionado
+
+```
+#Detección de datos anomalos y faltantes
+En esta parte comprobaremos la presencia de datos faltantes y de outliers, para ello ejecutaremos este código.
+```{r}
 
 ```
 
