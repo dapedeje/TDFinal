@@ -1,0 +1,301 @@
+---
+title: "Trabajo final"
+author: "Equipo H"
+date: "`r Sys.Date()`"
+output:
+  html_document:
+    echo: yes
+    number_sections: yes
+    theme: lumen
+    toc: yes
+  pdf_document:
+    toc: yes
+    toc_depth: 3
+  html_notebook:
+    echo: yes
+    number_sections: yes
+    toc: yes
+params:
+  lang: ES
+lang: "`r switch(params$lang, ES = 'es-ES', EN = 'en-US')`"
+subtitle: "Tratamiento de Datos. Grado en Ciencia de Datos- UV"
+language:
+  label:
+    fig: 'Figura '
+    tab: 'Tabla '
+    eq: 'Ecuación '
+    thm: 'Teorema '
+    lem: 'Lema '
+    def: 'Definición '
+    cor: 'Corolario '
+    prp: 'Proposición '
+    exm: 'Ejemplo '
+    exr: 'Ejercicio '
+    proof: 'Demostración. '
+    remark: 'Nota: '
+    solution: 'Solución. '
+---
+
+# Introducción
+
+En este fichero vamos analizar los datos pacientes que han usado un electro cardiograma
+
+
+# Configuración del los bloques (*Chunks*)
+
+Configuramos los bloques de código.
+
+```{r setup, cache = F, echo = F, message = F, warning = F, tidy = F}
+
+
+# CONFIGURACIÓN GENERAL
+library(knitr)
+options(width = 100)
+
+# Opciones generales de los chucks. Se utilizarán salvo cambios en el chunk
+opts_chunk$set(echo=F, message = F, error = F, warning = F, comment = NA, fig.align = 'center', dpi = 200, tidy = F, cache.path = '.cache/', fig.path = './figura/')
+
+# Opciones generales de dígitos cuando se incluyen tablas
+#options(xtable.type = 'html')
+knit_hooks$set(inline = function(x) {
+  
+  if(is.numeric(x)) {
+    round(x, getOption('digits'))
+  } else {
+    paste(as.character(x), collapse = ', ')
+  }
+})
+#knit_hooks$set(plot = knitr:::hook_plot_html)
+```
+
+# Instalación automática de paquetes
+
+Tenemos esta parte para instalar los paquetes necesarios si es que el usuario no los tiene.
+
+```{r}
+
+# Especificamos las librerías necesarias en esta lista
+
+packages = c("tidyverse","knitr")
+
+#use this function to check if each package is on the local machine
+#if a package is installed, it will be loaded
+#if any are not, the missing package(s) will be installed and loaded
+package.check <- lapply(packages, FUN = function(x) {
+  if (!require(x, character.only = TRUE)) {
+    install.packages(x, dependencies = TRUE,repos='http://cran.rediris.es')
+  }
+  library(x, character.only = TRUE)
+})
+
+#verify they are loaded
+search()
+
+```
+
+#Leer ficheros binarios
+
+En este apartado tenemos las funciones que nos permitiran leer los ficheros binarios usando la ruta
+
+```{r}
+LeerCabDig <- function(ruta) {
+  #Nombramos las varibles que debe tener esta cabezera
+  NomVar <- c("Dia",
+              "Mes",
+              "Anyo",
+              "Hor",
+              "Min",
+              "Seg",
+              "FrecMuestreo",
+              "NumCanales")
+  #Usamos file.path para añadir el nombre de fichero que nos interesa leer
+  RD <- file.path(ruta, "cabecera_FicheroDigital.dat")
+  
+  #Creamos la varible que nos permita conectar con el fichero
+  FichD <- file(RD, "rb")#rb es usado para indicar que es binario
+  #Leemos la línea
+  CabDigi <- readBin(
+    FichD,
+    what = integer(),
+    signed = F, #indicamos que los datos son sin signo
+    n = 8, #Se tratan de 8 varibles
+    size = 1 #Como los datos son almacenados en 8bits lo que es 1 byte, por lo tanto size debe ser 1
+  )
+  Cab <- data.frame(t(CabDigi)) #Creamos un dataframe con los datos de la cabecera
+  
+  
+  names(Cab) <- NomVar #Cambiamos los nombres
+  
+  close(FichD) #Cerramos el fichero
+  
+  
+  return(Cab) #Devolvemos el data frame
+  
+}
+
+LeerCabAna <- function(ruta) {
+  #Declaramos el nombre de las varibles
+  NomVar <- c(
+    "Dia",
+    "Mes",
+    "Anyo",
+    "Hor",
+    "Min",
+    "Seg",
+    "ResolADC",
+    "VolatageMax",
+    "VoltageMin",
+    "FrecMuestreo"
+  )
+  #Como en el caso anterior usamos el mismo metodo para leer el fichero
+  RD <- file.path(ruta, "cabecera_FicheroAnalogico.dat")
+  Fich <- file(RD, "rb")
+  #Similar a lo de antes, pero cambia un poco, ya que el fichero, pero debemos
+  #de tener en cuenta que los datos tiene un formato un poco peculiar
+  CabA1 <- readBin(Fich,what = integer(),
+                   signed = F,n = 7,#las 7 primeras variables deben de leerser primero
+                   size = 1)#Esto se guardan en un byte
+  CabA2 <- readBin(Fich,what = integer(),
+                   n = 3,#El resto de variables tienen el otro formato
+                   size = 2)#se almacenan en 2 bytes(16 bits)
+  Cab <- data.frame(matrix(c(CabA1, CabA2), #Concatenamos las dos y generamos un data frame
+                           nrow = 1))
+  
+  
+  names(Cab) <- NomVar #Cambiamos el nombre de las varibles
+  
+  
+  close(Fich) #Cerramos el fichero
+  
+  return(Cab) #Devolvemos el data frame
+}
+
+LeerFicheroAnalogico <- function(ruta) {
+  Nvar <- "mv" #Nombre de la varible
+  #Leemos el fichero usando el procedimeinto habitual
+  RD <- file.path(ruta, "ficheroAnalogico.dat")
+  N <- file.size(RD)
+  fich <- file(RD, "rb")
+  #Leemos todo el fichero con los datos en formato de 2 bits
+  ContFich <- readBin(fich,what = integer(),
+                      n = N,size = 2, signed = T)
+  Cont <- data.frame(ContFich) #Creamos un dataframe
+  names(Cont) <- Nvar #Cambiamos el nombre
+  close(fich) #Cerramos fichero
+  return(Cont) #Devolvemos el dataframe
+}
+
+LeerFicheroDigital <- function(ruta) {
+  #Declaramos el nombre de las varibles.
+  NVar <- c("HR1", "HR2", "MHR",
+            "TOCO", "SPO2",
+            "VCP", "Ps",
+            "Pd", "Pm")
+  #Hacemos el procedimiento habitual
+  RD <- file.path(ruta, "ficheroDigital.dat")
+  fich <- file(RD, "rb")
+  N <- file.size(RD) #Obtenemos el tamaño del fichero para poder leerlo todo
+  
+  ContFich <- readBin(fich,what = integer(),
+                      n = N , size = 1, signed = F)#Leemos todo, y los datos son en formato de 1 bits
+  cont <-data.frame(matrix(ContFich, ncol = length(NVar), 
+                           byrow = T))
+  names(cont) <- NVar #Cabiamos el nombre de las variables
+  close(fich)
+  return(cont) #Devolvemos el data frame
+  
+}
+
+ObData <- function(ruta){
+  
+  CaDi <- LeerCabDig(ruta)
+  DfDigital <- LeerFicheroDigital(ruta)
+  CaAna <- LeerCabAna(ruta)
+  DfAna <- LeerFicheroAnalogico(ruta)
+  
+  return(list(CaDi,DfDigital,CaAna,DfAna))
+} 
+
+CrearTiempoDig <- function(df){
+  # Crea la variable tiempo #by = 0.025
+  tiempo <- seq(0, length.out = nrow(df), by = 0.25)
+  # Selecciona las primeras 2604 filas de tiempo
+  tiempo <- head(tiempo, nrow(df))
+  
+  
+  return(tiempo)
+}
+
+CrearTiempoAna <- function(df){
+  Fm <- 1000
+  tiempo_analogico <- seq(from = 0, to = (nrow(df)-1)/Fm, by = 1/Fm)
+  
+  return(tiempo_analogico)
+}
+
+```
+
+Ahora procederemos a leer los ficheros de la carpeta data
+
+```{r}
+#Declaramos las rutas donde estan los datos de los pacientes
+rutas <- c("data/data/0519xxxiii14/06_02_2023/14.20.34",
+           "data/data/0795xalvii8a7/27_09_2022/10.11.00",
+           "data/data/0795xalvii8a7/27_09_2022/10.11.12",
+           "data/data/1059xlxveei79_ECGf2/27_09_2022/14.42.29_III_ECGyEXTyRESTO",
+           "data/data/ecg5_210xlxi81_IP_39_eBR_BRP_720/12.31.15",
+           "data/data/ecg5_210xlxi81_IP_39_eBR_BRP_720/12.49.57"
+           )
+
+#Ahora obtenemos los datos de cada paciente.
+
+Datos <- ObData(rutas[4])
+Cab_Dig <- as.data.frame(Datos[1])
+Datos_Dig <- as.data.frame(Datos[2])
+Cab_Ana <- as.data.frame(Datos[3])
+Datos_Ana <- as.data.frame(Datos[4])
+
+#Creamos la variable tiempo para los datos digitales
+tiempo <- CrearTiempoDig(Datos_Dig)
+#Añadimos la variable tiempo a nuestro df de datos digitales
+Datos_Dig <- Datos_Dig %>% mutate(tiempo = tiempo)
+
+#Creamos la variable tiempo para los datos Analogicos
+tiempo <- CrearTiempoAna(Datos_Ana)
+#Añadimos la variable tiempo a nuestro df de datos Analogicos
+Datos_Ana <- Datos_Ana %>% mutate(tiempo = tiempo)
+
+```
+Ahora vamos a unirlo todo:
+
+```{r}
+#REPRESENTACION
+
+#GRAFICO FICHERO DIGITAL
+
+#Nos quedamos con los datos con el tiempo por debajo de 300
+datos_Dig_300 <- Datos_Dig %>% select(everything()) %>% filter(tiempo <= 300)
+
+#Adaptamos los datos para poder representarlos:
+datos_Dig_300 <- gather(datos_Dig_300, key = "Tipo", value = "value", -tiempo)
+
+#Representamos todas las variables en funcion del tiempo:
+ggplot(datos_Dig_300, aes(x = tiempo, y = value, color = Tipo)) + 
+  geom_line() + 
+  facet_wrap(~ Tipo, scales = "free") + 
+  labs( x = "Tiempo", y = "Valor")
+
+#GRAFICO FICHERO ANALÓGICO
+
+#Obtenemos los ultimos 9 segundos de la señal
+Datos_Ana_9 <- Datos_Ana %>% select(everything()) %>% filter(tiempo> max(tiempo)-9)
+#Representamos los ultimos 9 segundos de la señal
+g <- ggplot(Datos_Ana_10, aes(x = tiempo, y = mv)) + geom_line(col="blue") +
+  labs(title = "Fichero Analogico", x = "time", y = "data") 
+ggplotly(g)
+
+
+```
+
+
+
