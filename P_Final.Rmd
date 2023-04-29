@@ -406,6 +406,44 @@ datos_faltantes25<-is.na(df$Hora)
 datos_faltantes25
 
 #Como resulta todo FALSE no hay ningún dato faltante
+
+#Ahora lo que si es posible ver es que hay valores que no tienen muchos sentido, ya que hay valores de 0 en cosas como los latidos por minuto, o presión sanguinia, lo cual no tiene mucho sentido, por lo tanto esos datos los convertiremos en NAs para no tomarlos muy encuenta
+#Además aplicaremos algún metodo para comprobar que si hay más valores extraños, para lo cual definiremos las siguientes funciones
+#Definimos la función para dectectar outliers 
+# MADM median absolute deviation from the median
+madm <- function(x, na.rm = T) {  
+  if (na.rm){
+    x <- x[!is.na(x)]
+  }
+  res <- 1.4826 * median(abs(x - median(x)))
+  return(res)
+}
+
+# Regla 3 sigma
+reglasigma <- function(x,na.rm = T) { 
+  rest1 <- Estadisticos(x)[1]
+  rest2 <-Estadisticos(x)[3]
+  return(x < rest1 - 3*madm(x) | x > rest1 + 3 * rest2)
+  }
+
+# Identificador Hampel
+reglahampel <- function(x, na.rm = T) {  
+  
+  return( x < median(x, na.rm = T) - 3*madm(x, na.rm = T) | 
+            x > median(x, na.rm = T) + 3*madm(x, na.rm = T))
+  }
+
+# Regla boxplot
+reglaboxplot <- function(x,na.rm = T) {
+  return(x < quantile(x, 1/4, na.rm = T) - 1.5 *IQR(x, na.rm = T) |
+           x > quantile(x, 3/4, na.rm = T) + 1.5 *IQR(x, na.rm = T))
+  }
+# Percentiles
+reglapercentil <- function(x) {  
+  return(x < quantile(x, 0.05, na.rm = T) | x > quantile(x, 0.05, na.rm = T))
+}
+
+metodos <- list(reglasigma=reglasigma,reglahampel=reglahampel,reglaboxplot=reglaboxplot,reglapercentil=reglapercentil)
 ```
 
 
