@@ -1,35 +1,24 @@
 ---
 title: "Trabajo final"
-subtitle: Tratamiento de Datos. Grado en Ciencia de Datos- UV
 author: "Equipo H"
-#Pone la fecha de generación del documento
-date:  "`r Sys.Date()`"  #Pondría la fecha del día actual
-# Para que en lugar de "Contents" ponga "Indice" al incluir la tabla de contenido
-
-params:
-  lang: ES
-lang: "`r switch(params$lang, ES = 'es-ES', EN = 'en-US')`"
-
-# Por defecto se generará un salida html
-# Si si quieres otras salidas o varias de ellas descomenta lo que proceda
+date: "`r Sys.Date()`"
 output:
-# Salida pdf. Si se incluye código en LaTex necesitarás tener instalado un compilador de Latex
-  pdf_document:
-    toc: yes      # Tabla de contenido (índice)
-    toc_depth: 3  # Número de niveles de la tabla de contenido (índice) # 1, ##2,###3
-#    number_sections: yes # Numeración de las secciones
-# Salida html, 
   html_document:
     echo: yes
     number_sections: yes
-    theme: lumen    # Aspecto y estilo,otras opciones: cerulean, journal, flatly, darkly, readable, spacelab, united, cosmo, lumen, paper, sandstone, simplex, and yeti 
+    theme: lumen
     toc: yes
-# Salida html_notebook, como html, pero con algunas opciones de visualización
+  pdf_document:
+    toc: yes
+    toc_depth: 3
   html_notebook:
     echo: yes
     number_sections: yes
     toc: yes
-# Esto nos permite traducir estas etiquetas para que aparezcan en otro idioma en caso de que se usen en el documento para referenciar a figuras, tablas, etc
+params:
+  lang: ES
+lang: "`r switch(params$lang, ES = 'es-ES', EN = 'en-US')`"
+subtitle: "Tratamiento de Datos. Grado en Ciencia de Datos- UV"
 language:
   label:
     fig: 'Figura '
@@ -254,6 +243,8 @@ CrearTiempoAna <- function(df){
 
 Ahora procederemos a leer los ficheros de la carpeta data
 
+
+
 ```{r}
 #Declaramos las rutas donde estan los datos de los pacientes
 rutas <- c("data/data/0519xxxiii14/06_02_2023/14.20.34",
@@ -263,7 +254,12 @@ rutas <- c("data/data/0519xxxiii14/06_02_2023/14.20.34",
            "data/data/ecg5_210xlxi81_IP_39_eBR_BRP_720/12.31.15",
            "data/data/ecg5_210xlxi81_IP_39_eBR_BRP_720/12.49.57"
            )
-
+Pas1 <- ObData(rutas[1])
+Pas2 <- ObData(rutas[2])
+Pas3 <- ObData(rutas[3])
+Pas4 <- ObData(rutas[4])
+Pas5 <- ObData(rutas[5])
+Pas6 <- ObData(rutas[6])
 
 #Probamos a hacer la lectura de los datos de un paciente de prueba para ver si concuerda con lo que nos deberia salir:
 Datos <- ObData(rutas[4])
@@ -284,6 +280,110 @@ Datos_Ana <- Datos_Ana %>% mutate(tiempo = tiempo)
 ```
 
 Ahora vamos a unirlo todo:
+
+```{r}
+Pas1[[2]] #Podemos ver que el dataframe del paciente 1 tiene varias muestras por lo que para este caso podemos ver que podemos usar la media para representar cada una de las variables
+#Usaremos la media para crear el df que usaremos, ya que así será más facil hacer los gráficos
+summary(Pas1[[2]])
+summary(Pas1[[4]])
+summary(Pas2[[2]])
+summary(Pas2[[4]])
+summary(Pas3[[2]])
+summary(Pas3[[4]])
+summary(Pas4[[2]])
+summary(Pas4[[4]])
+summary(Pas5[[2]])
+summary(Pas5[[4]])
+summary(Pas6[[2]])
+summary(Pas6[[4]])
+res1 <- Pas1[[2]] %>% 
+  summarise(across(everything(), mean))
+res1
+res1_2 <-  Pas1[[4]] %>% 
+  summarise(across(everything(), mean))
+res1_2
+res1_3 <- Pas1[[1]]
+res1_3
+res1_4 <- Pas1[[3]]
+res1_4
+pas1 <- data.frame(res1,res1_2,res1_3, res1_4[7:10])
+pas1
+#Ahora hacemos lo mismo con cada paciente
+#pas2
+#Obtenemos las media
+res2 <- Pas2[[2]] %>% 
+  summarise(across(everything(), mean))
+res2
+res2_2 <-  Pas2[[4]] %>% 
+  summarise(across(everything(), mean)) 
+res2_2
+res2_3 <- Pas2[[1]]
+res2_3
+res2_4 <- Pas2[[3]]
+res2_4
+pas2 <- data.frame(res2,res2_2,res2_3, res2_4[7:10]) #Creamos el df
+pas2
+#Pas 3
+res3 <- Pas3[[2]] %>% 
+  summarise(across(everything(), mean))
+res3
+res3_2 <-  Pas3[[4]] %>% 
+  summarise(across(everything(), mean))
+res3_2
+res3_3 <- Pas3[[1]]
+res3_3
+res3_4 <- Pas3[[3]]
+res3_4
+pas3 <- data.frame(res3,res3_2,res3_3, res3_4[7:10])#Creamos el df
+pas3
+#Pas 4
+res4 <- Pas4[[2]] %>% 
+  summarise(across(everything(), mean))
+res4
+res4_2 <-  Pas4[[4]] %>% 
+  summarise(across(everything(), mean))
+res4_2
+res4_3 <- Pas4[[1]]
+res4_3
+res4_4 <- Pas4[[3]]
+res4_4
+pas4 <- data.frame(res4,res4_2,res4_3, res4_4[7:10]) #Creamos el df
+pas4
+#Pas 5
+res5 <- Pas5[[2]] %>% 
+  summarise(across(everything(), mean))
+res5
+res5_2 <-  Pas5[[4]] %>% 
+  summarise(across(everything(), mean))
+res5_2
+res5_3 <- Pas5[[1]]
+res5_3
+res5_4 <- Pas5[[3]]
+res5_4
+pas5 <- data.frame(res5,res5_2,res5_3, res5_4[7:10]) #Creamos el df
+pas5
+#Pas 6
+res6 <- Pas6[[2]] %>% 
+  summarise(across(everything(), mean)) #Obtenemos las media
+res6
+res6_2 <-  Pas6[[4]] %>% 
+  summarise(across(everything(), mean))
+res6_2
+res6_3 <- Pas6[[1]]
+res6_3
+res6_4 <- Pas6[[3]]
+res6_4
+pas6 <- data.frame(res6,res6_2,res6_3, res6_4[7:10]) #Creamos el df
+pas6
+df <-rbind(pas1,pas2,pas3,pas4,pas5,pas6) #Creamos el df definitivo
+df 
+#Por ultimo uniremos los registros para crear fecha y hora
+df$Fecha <- paste(df$Dia, df$Mes, df$Anyo, sep = "/") #Usamos paste para crear la varible fecha
+df$Hora <- paste(df$Hor, df$Min, df$Seg, sep = ":") #Usamos paste para crear la varible hora
+df <- df %>%
+  select(-c(Dia, Mes, Anyo, Hor, Min, Seg)) #Quitamos las variables que ya nos sirven
+df
+```
 
 ```{r}
 #REPRESENTACION
@@ -327,6 +427,7 @@ En esta parte comprobaremos la presencia de datos faltantes y de outliers, para 
 #y FALSE en caso contrario.
 
 #Vemos cada variable con respecto al data frame:
+
 datos_faltantes1<-is.na(df$HR1)
 datos_faltantes1
 
@@ -405,7 +506,11 @@ datos_faltantes24
 datos_faltantes25<-is.na(df$Hora)
 datos_faltantes25
 
+
 #Como resulta todo FALSE no hay ningún dato faltante
+```
+
+```{r}
 
 #Ahora lo que si es posible ver es que hay valores que no tienen muchos sentido, ya que hay valores de 0 en cosas como los latidos por minuto, o presión sanguinia, lo cual no tiene mucho sentido, por lo tanto esos datos los convertiremos en NAs para no tomarlos muy encuenta
 #Además aplicaremos algún metodo para comprobar que si hay más valores extraños, para lo cual definiremos las siguientes funciones
