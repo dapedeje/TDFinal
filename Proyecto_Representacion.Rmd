@@ -76,7 +76,7 @@ Tenemos esta parte para instalar los paquetes necesarios si es que el usuario no
 
 # Especificamos las librerías necesarias en esta lista
 
-packages = c("tidyverse","knitr")
+packages = c("tidyverse","knitr","plotly")
 
 #use this function to check if each package is on the local machine
 #if a package is installed, it will be loaded
@@ -206,6 +206,7 @@ LeerFicheroDigital <- function(ruta) {
   
 }
 
+#Funcion para obtener los datos de todos los ficheros
 ObData <- function(ruta){
   
   CaDi <- LeerCabDig(ruta)
@@ -216,18 +217,21 @@ ObData <- function(ruta){
   return(list(CaDi,DfDigital,CaAna,DfAna))
 } 
 
+#Funcion para crear la variable tiempo del fichero digital
 CrearTiempoDig <- function(df){
-  # Crea la variable tiempo #by = 0.025
+  # Creamos la variable del tiempo para el fichero digital 
   tiempo <- seq(0, length.out = nrow(df), by = 0.25)
-  # Selecciona las primeras 2604 filas de tiempo
-  tiempo <- head(tiempo, nrow(df))
+  
   
   
   return(tiempo)
 }
 
+#Funcion para crear la variable tiempo del fichero Analogico
 CrearTiempoAna <- function(df){
+  #Frecuencia de muestreo = 1000
   Fm <- 1000
+  # Creamos la variable del tiempo para el fichero Analogico 
   tiempo_analogico <- seq(from = 0, to = (nrow(df)-1)/Fm, by = 1/Fm)
   
   return(tiempo_analogico)
@@ -247,7 +251,7 @@ rutas <- c("data/data/0519xxxiii14/06_02_2023/14.20.34",
            "data/data/ecg5_210xlxi81_IP_39_eBR_BRP_720/12.49.57"
            )
 
-#Ahora obtenemos los datos de cada paciente.
+#Probamos a hacer la lectura de los datos de un paciente de prueba para ver si concuerda con lo que nos deberia salir
 
 Datos <- ObData(rutas[4])
 Cab_Dig <- as.data.frame(Datos[1])
@@ -273,7 +277,7 @@ Ahora vamos a unirlo todo:
 
 #GRAFICO FICHERO DIGITAL
 
-#Nos quedamos con los datos con el tiempo por debajo de 300
+#Nos quedamos con los datos con el tiempo por debajo de 301
 datos_Dig_300 <- Datos_Dig %>% select(everything()) %>% filter(tiempo <= 300)
 
 #Adaptamos los datos para poder representarlos:
@@ -290,7 +294,7 @@ ggplot(datos_Dig_300, aes(x = tiempo, y = value, color = Tipo)) +
 #Obtenemos los ultimos 9 segundos de la señal
 Datos_Ana_9 <- Datos_Ana %>% select(everything()) %>% filter(tiempo> max(tiempo)-9)
 #Representamos los ultimos 9 segundos de la señal
-g <- ggplot(Datos_Ana_10, aes(x = tiempo, y = mv)) + geom_line(col="blue") +
+g <- ggplot(Datos_Ana_9, aes(x = tiempo, y = mv)) + geom_line(col="blue") +
   labs(title = "Fichero Analogico", x = "time", y = "data") 
 ggplotly(g)
 
