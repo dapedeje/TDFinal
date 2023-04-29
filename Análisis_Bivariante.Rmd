@@ -48,7 +48,7 @@ Tenemos esta parte para instalar los paquetes necesarios si es que el usuario no
 
 # Especificamos las librerías necesarias en esta lista
 
-packages = c("tidyverse","knitr","ggplot2")
+packages = c("tidyverse","knitr","ggplot2","plotly")
 
 #use this function to check if each package is on the local machine
 #if a package is installed, it will be loaded
@@ -371,9 +371,11 @@ datos <- data.frame(x = rep(df$MHR, 2),
                          variable = rep(c("HR1", "HR2"), each = nrow(df)))
 
 # Crear un gráfico de línea con una línea para cada variable
-ggplot(data = datos, aes(x = x, y = y, color = variable)) +
+grafico <- ggplot(data = datos, aes(x = x, y = y, color = variable)) +
   geom_line() +
   labs(x = "Latidos por minuto maternos", y = "Latidos por minuto del feto", title = "Comparación entre los latidos por minuto maternos y los fetales")
+
+ggplotly(grafico)
 
 tabla <-  table(df$HR1, df$MHR)
 tabla
@@ -381,4 +383,17 @@ tabla
 
 Cómo podemos observar el número de latidos por minuto del feto es mayor que el número de latidos de la madre.
 
-## 
+## Búsqueda de variaciones en el ritmo cardíaco materno dependiendo del nivel de actividad uterina.
+
+```{r}
+tabla <-  table(df$TOCO, df$MHR)
+tabla
+
+grafico <- ggplot(data = df, aes(x = MHR, y = TOCO, color = "red")) +
+  geom_point() +
+  labs(x = "Latidos por minuto maternos", y = "Presión uterina", title = "Comparación entre los latidos por minuto maternos y la presión uterina")
+
+ggplotly(grafico)
+```
+
+Con
