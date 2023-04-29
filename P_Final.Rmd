@@ -319,7 +319,93 @@ ggplotly(g)
 #Detección de datos anomalos y faltantes
 En esta parte comprobaremos la presencia de datos faltantes y de outliers, para ello ejecutaremos este código.
 ```{r}
+#Primero miraremos si exiten algun NA en nuestros datos
+#Una vez creado el data frame, debemos indagar para, en el caso de que halla, 
+#encontrar los datos faltantes, esto lo llevaremos a cabo mediante
+#la función is.na:
+#Devolverá un vector lógico de la misma longitud que el vector o columna que se está verificando, donde cada elemento será TRUE si el valor correspondiente es faltante,
+#y FALSE en caso contrario.
 
+#Vemos cada variable con respecto al data frame:
+datos_faltantes1<-is.na(df$HR1)
+datos_faltantes1
+
+datos_faltantes2<-is.na(df$HR2)
+datos_faltantes2
+
+datos_faltantes3<-is.na(df$MHR)
+datos_faltantes3
+
+datos_faltantes4<-is.na(df$TOCO)
+datos_faltantes4
+
+datos_faltantes5<-is.na(df$SPO2)
+datos_faltantes5
+
+datos_faltantes6<-is.na(df$VCP)
+datos_faltantes6
+
+datos_faltantes7<-is.na(df$Ps)
+datos_faltantes7
+
+datos_faltantes8<-is.na(df$Pd)
+datos_faltantes8
+
+datos_faltantes9<-is.na(df$Pm)
+datos_faltantes9
+
+datos_faltantes10<-is.na(df$HR1.1)
+datos_faltantes10
+
+datos_faltantes10<-is.na(df$HR2.1)
+datos_faltantes10
+
+datos_faltantes11<-is.na(df$MHR.1)
+datos_faltantes11
+
+datos_faltantes12<-is.na(df$TOCO.1)
+datos_faltantes12
+
+datos_faltantes13<-is.na(df$SPO2.1)
+datos_faltantes13
+
+datos_faltantes14<-is.na(df$VCP.1)
+datos_faltantes14
+
+datos_faltantes15<-is.na(df$Ps.1)
+datos_faltantes15
+
+datos_faltantes16<-is.na(df$Pd.1)
+datos_faltantes16
+
+datos_faltantes17<-is.na(df$Pm.1)
+datos_faltantes17
+
+datos_faltantes18<-is.na(df$FrecMuestreo)
+datos_faltantes18
+
+datos_faltantes19<-is.na(df$NumCanales)
+datos_faltantes19
+
+datos_faltantes20<-is.na(df$ResolADC)
+datos_faltantes20
+
+datos_faltantes21<-is.na(df$VolatageMax)
+datos_faltantes21
+
+datos_faltantes22<-is.na(df$VolatageMin)
+datos_faltantes22
+
+datos_faltantes23<-is.na(df$FrecMuestreo.1)
+datos_faltantes23
+
+datos_faltantes24<-is.na(df$Fecha)
+datos_faltantes24
+
+datos_faltantes25<-is.na(df$Hora)
+datos_faltantes25
+
+#Como resulta todo FALSE no hay ningún dato faltante
 ```
 
 
