@@ -580,4 +580,51 @@ summary(Pas6[[4]]) #Parece normal
 ```
 
 
+```{r}
+str(df)
+```
+
+##   Comparación de latidos por minuto del feto y de la madre.
+
+```{r}
+# Transformar los datos a formato data frame
+datos <- data.frame(x = rep(df$MHR, 2),
+                         y = c(df$HR1, df$HR2),
+                         variable = rep(c("HR1", "HR2"), each = nrow(df)))
+# Crear un gráfico de línea con una línea para cada variable
+grafico <- ggplot(data = datos, aes(x = x, y = y, color = variable)) +
+  geom_line() +
+  labs(x = "Latidos por minuto maternos", y = "Latidos por minuto del feto", title = "Comparación entre los latidos por minuto maternos y los fetales")
+ggplotly(grafico)
+tabla <-  table(df$HR1, df$MHR)
+tabla
+```
+
+Cómo podemos observar el número de latidos por minuto del feto es mayor que el número de latidos de la madre. Y que conforme aumentan los latidos maternos, podemos observar que los fetales lo hacen. Así que podemos llegar a la conclusión que a priori, los latidos fetales dependen de los latidos maternos.
+
+## Búsqueda de variaciones en el ritmo cardíaco materno dependiendo del nivel de actividad uterina.
+
+```{r}
+tabla <-  table(df$TOCO, df$MHR)
+tabla
+grafico <- ggplot(data = df, aes(x = MHR, y = TOCO, color = "red")) +
+  geom_point() +
+  labs(x = "Latidos por minuto maternos", y = "Presión uterina", title = "Comparación entre los latidos por minuto maternos y la presión uterina")
+ggplotly(grafico)
+```
+
+A priori se puede observar que el valor más alto de la presión uterina se relaciona con el valor más alto de los latidos por minuto maternos. Sin embargo, aunque en general se pueda observar esa relación, hay una observación la cual se sale de la norma que queremos demostrar ya que tiene unos latidos por minuto altos pero, a pesar de esto, no tiene un valor de la presión uterina elevado. Así que podemos llegar a la conclusión de que la persión uterina influye a la hora de subir los latidos por minuto maternos, pero que es un factor no la causa principal.
+
+## Variaciones entre la presión arterial sistólica y la diastólica.
+
+```{r}
+tabla <-  table(df$Ps, df$Pd)
+tabla
+grafico <- ggplot(data = df, aes(x = Ps, y = Pd, color = "red")) +
+  geom_point() +
+  labs(x = "Presión sistólica", y = "Presión diastólica", title = "Comparación entre la presión sistólica y la diastólica")
+ggplotly(grafico)
+```
+
+Según la [Biblioteca Nacional de Medicina](https://medlineplus.gov/spanish/ency/article/000468.htm) los valores de la presión sistólica deben estar inferiores a 120 y la diastólica debe estar por debajo de 80. Las 2 observaciones que tienen valores, 1 tiene la presión sistólica y diastólica dentro del rango; en cambio, la otra observación si tiene una presión arterial sistólica más alta que la recomendable. Cosa la cuál le puede provocar enfermadades en un futuro.
 
