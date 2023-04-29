@@ -444,6 +444,127 @@ reglapercentil <- function(x) {
 }
 
 metodos <- list(reglasigma=reglasigma,reglahampel=reglahampel,reglaboxplot=reglaboxplot,reglapercentil=reglapercentil)
+
+summary(Pas1[[2]]) #Podemos ver que HR2, HR1, Toco,ps,pd,pm tiene valores minimos de 0, lo cual sabemos que nos es posibel, ya que correcponden a los latidos del corazón y o presión de diferentes partes del cuerpo
+#Lo ideal sería nobralos como NA
+r <- Pas1[[2]]
+r<-r %>%
+  mutate(HR1 = ifelse(HR1 == 0,NA,HR1)) %>%
+  mutate(HR2 = ifelse(HR2 == 0,NA,HR2)) %>%
+  mutate(TOCO = ifelse(TOCO == 0,NA,TOCO)) %>%
+  mutate(Ps = ifelse(Ps == 0,NA,Ps)) %>%
+  mutate(Pd = ifelse(Pd == 0,NA,Pd)) %>%
+  mutate(Pm = ifelse(Pm == 0,NA,Pm))
+  
+summary(r)
+#Usamos las funciones para comprobar la presencia de outliers
+r %>%
+  summarise(across(everything(), metodos))
+  
+Pas1[[2]] <- r
+summary(Pas1[[2]])
+
+summary(Pas1[[4]]) #Parece normal
+
+#Ahora hacemos esto para cada paciente
+r <- Pas2[[2]]
+r<-r %>%
+  mutate(HR1 = ifelse(HR1 == 0,NA,HR1)) %>%
+  mutate(HR2 = ifelse(HR2 == 0,NA,HR2)) %>%
+  mutate(TOCO = ifelse(TOCO == 0,NA,TOCO)) %>%
+  mutate(Ps = ifelse(Ps == 0,NA,Ps)) %>%
+  mutate(Pd = ifelse(Pd == 0,NA,Pd)) %>%
+  mutate(Pm = ifelse(Pm == 0,NA,Pm))
+  
+summary(r)
+#Usamos las funciones para comprobar la presencia de outliers
+r %>%
+  summarise(across(everything(), metodos))
+  
+
+Pas2[[2]] <- r
+summary(Pas2[[2]])
+
+summary(Pas2[[4]]) #Parece normal
+
+r <- Pas3[[2]]
+r<-r %>%
+  mutate(HR1 = ifelse(HR1 == 0,NA,HR1)) %>%
+  mutate(HR2 = ifelse(HR2 == 0,NA,HR2)) %>%
+  mutate(TOCO = ifelse(TOCO == 0,NA,TOCO)) %>%
+  mutate(Ps = ifelse(Ps == 0,NA,Ps)) %>%
+  mutate(Pd = ifelse(Pd == 0,NA,Pd)) %>%
+  mutate(Pm = ifelse(Pm == 0,NA,Pm))
+  
+summary(r)
+#Usamos las funciones para comprobar la presencia de outliers
+r %>%
+  summarise(across(everything(), metodos))
+  
+Pas3[[2]] <- r
+summary(Pas3[[2]])
+
+summary(Pas3[[4]]) #Parece normal
+
+r <- Pas4[[2]]
+r<-r %>%
+  mutate(HR1 = ifelse(HR1 == 0,NA,HR1)) %>%
+  mutate(HR2 = ifelse(HR2 == 0,NA,HR2)) %>%
+  mutate(TOCO = ifelse(TOCO == 0,NA,TOCO)) %>%
+  mutate(Ps = ifelse(Ps == 0,NA,Ps)) %>%
+  mutate(Pd = ifelse(Pd == 0,NA,Pd)) %>%
+  mutate(Pm = ifelse(Pm == 0,NA,Pm))
+  
+summary(r)
+#Usamos las funciones para comprobar la presencia de outliers
+r %>%
+  summarise(across(everything(), metodos))
+  
+Pas4[[2]] <- r
+summary(Pas4[[2]])
+
+summary(Pas4[[4]]) #Parece normal
+
+r <- Pas5[[2]]
+r<-r %>%
+  mutate(HR1 = ifelse(HR1 == 0,NA,HR1)) %>%
+  mutate(HR2 = ifelse(HR2 == 0,NA,HR2)) %>%
+  mutate(TOCO = ifelse(TOCO == 0,NA,TOCO)) %>%
+  mutate(Ps = ifelse(Ps == 0,NA,Ps)) %>%
+  mutate(Pd = ifelse(Pd == 0,NA,Pd)) %>%
+  mutate(Pm = ifelse(Pm == 0,NA,Pm))
+  
+summary(r)
+#Usamos las funciones para comprobar la presencia de outliers
+r %>%
+  summarise(across(everything(), metodos))
+  
+Pas5[[2]] <- r
+summary(Pas5[[2]])
+
+summary(Pas5[[4]]) #Parece normal
+
+
+r <- Pas6[[2]]
+r<-r %>%
+  mutate(HR1 = ifelse(HR1 == 0,NA,HR1)) %>%
+  mutate(HR2 = ifelse(HR2 == 0,NA,HR2)) %>%
+  mutate(TOCO = ifelse(TOCO == 0,NA,TOCO)) %>%
+  mutate(Ps = ifelse(Ps == 0,NA,Ps)) %>%
+  mutate(Pd = ifelse(Pd == 0,NA,Pd)) %>%
+  mutate(Pm = ifelse(Pm == 0,NA,Pm))
+  
+summary(r)
+#Usamos las funciones para comprobar la presencia de outliers
+r %>%
+  summarise(across(everything(), metodos))
+  
+Pas6[[2]] <- r
+summary(Pas6[[2]])
+
+summary(Pas6[[4]]) #Parece normal
+
+#Podemos ver que esto nos esta arrojando resultados variables, pero es lo normal debido a que los muchos de estos metodos discrimina mucho, pero podemos ver que las reglas de hampel no detectan outliers lo cual si vemos los datos parece ser lo más compresible
 ```
 
 
