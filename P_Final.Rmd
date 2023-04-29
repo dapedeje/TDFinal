@@ -87,7 +87,7 @@ Tenemos esta parte para instalar los paquetes necesarios si es que el usuario no
 
 # Especificamos las librerías necesarias en esta lista
 
-packages = c("tidyverse","knitr")
+packages = c("tidyverse","knitr","plotly")
 
 #use this function to check if each package is on the local machine
 #if a package is installed, it will be loaded
@@ -110,7 +110,7 @@ En este apartado tenemos las funciones que nos permitiran leer los ficheros bina
 
 ```{r}
 LeerCabDig <- function(ruta) {
-  #Nombramos las varibles que debe tener esta cabezera
+  #Nombramos las varibles que debe tener esta cabecera
   NomVar <- c("Dia",
               "Mes",
               "Anyo",
@@ -189,7 +189,7 @@ LeerFicheroAnalogico <- function(ruta) {
   fich <- file(RD, "rb")
   #Leemos todo el fichero con los datos en formato de 2 bits
   ContFich <- readBin(fich,what = integer(),
-                      n = N,size = 2, signed = F)
+                      n = N,size = 2, signed = T)
   Cont <- data.frame(ContFich) #Creamos un dataframe
   names(Cont) <- Nvar #Cambiamos el nombre
   close(fich) #Cerramos fichero
@@ -217,15 +217,38 @@ LeerFicheroDigital <- function(ruta) {
   
 }
 
+#Funcion para obtener los datos de todos los ficheros
 ObData <- function(ruta){
+  
   CaDi <- LeerCabDig(ruta)
   DfDigital <- LeerFicheroDigital(ruta)
-
   CaAna <- LeerCabAna(ruta)
-  DfAna <- LeerFicheroDigital(ruta)
+  DfAna <- LeerFicheroAnalogico(ruta)
   
-  return(list(CaDi,DfDigital, CaAna, DfAna))
+  return(list(CaDi,DfDigital,CaAna,DfAna)) #Devolvemos una lista con todos los DF de los datos
 } 
+
+
+#Funcion para crear la variable tiempo del fichero digital
+CrearTiempoDig <- function(df){
+  # Creamos la variable del tiempo para el fichero digital 
+  tiempo <- seq(0, length.out = nrow(df), by = 0.25)
+  
+  
+  
+  return(tiempo)
+}
+
+
+#Funcion para crear la variable tiempo del fichero Analogico
+CrearTiempoAna <- function(df){
+  #Frecuencia de muestreo = 1000
+  Fm <- 1000
+  # Creamos la variable del tiempo para el fichero Analogico 
+  tiempo_analogico <- seq(from = 0, to = (nrow(df)-1)/Fm, by = 1/Fm)
+  
+  return(tiempo_analogico)
+}
 
 ```
 
@@ -241,158 +264,55 @@ rutas <- c("data/data/0519xxxiii14/06_02_2023/14.20.34",
            "data/data/ecg5_210xlxi81_IP_39_eBR_BRP_720/12.49.57"
            )
 
-#Ahora obtenemos los datos de cada paciente.
 
-Pas1 <- ObData(rutas[1])
-Pas2 <- ObData(rutas[2])
-Pas3 <- ObData(rutas[3])
-Pas4 <- ObData(rutas[4])
-Pas5 <- ObData(rutas[5])
-Pas6 <- ObData(rutas[6])
+#Probamos a hacer la lectura de los datos de un paciente de prueba para ver si concuerda con lo que nos deberia salir:
+Datos <- ObData(rutas[4])
+Cab_Dig <- as.data.frame(Datos[1])
+Datos_Dig <- as.data.frame(Datos[2])
+Cab_Ana <- as.data.frame(Datos[3])
+Datos_Ana <- as.data.frame(Datos[4])
 
+#Creamos la variable tiempo para los datos digitales
+tiempo <- CrearTiempoDig(Datos_Dig)
+#Añadimos la variable tiempo a nuestro df de datos digitales
+Datos_Dig <- Datos_Dig %>% mutate(tiempo = tiempo)
+
+#Creamos la variable tiempo para los datos Analogicos
+tiempo <- CrearTiempoAna(Datos_Ana)
+#Añadimos la variable tiempo a nuestro df de datos Analogicos
+Datos_Ana <- Datos_Ana %>% mutate(tiempo = tiempo)
 ```
 Ahora vamos a unirlo todo:
 
 ```{r}
+#REPRESENTACION
 
-Pas1[[2]] #Podemos ver que el dataframe del paciente 1 tiene varias muestras por lo que para este caso podemos ver que podemos usar la media para representar cada una de las variables
+#GRAFICO FICHERO DIGITAL
 
-#Usaremos la media para crear el df que usaremos, ya que así será más facil hacer los gráficos
-summary(Pas1[[2]])
-summary(Pas1[[4]])
+#Nos quedamos con los datos con el tiempo por debajo de 301
+datos_Dig_300 <- Datos_Dig %>% select(everything()) %>% filter(tiempo <= 300)
 
-summary(Pas2[[2]])
-summary(Pas2[[4]])
+#Adaptamos los datos para poder representarlos:
+datos_Dig_300 <- gather(datos_Dig_300, key = "Tipo", value = "value", -tiempo)
 
-summary(Pas3[[2]])
-summary(Pas3[[4]])
+#Representamos todas las variables en funcion del tiempo:
+ggplot(datos_Dig_300, aes(x = tiempo, y = value, color = Tipo)) + 
+  geom_line() + 
+  facet_wrap(~ Tipo, scales = "free") + 
+  labs( x = "Tiempo", y = "Valor")
 
-summary(Pas4[[2]])
-summary(Pas4[[4]])
+#GRAFICO FICHERO ANALÓGICO
 
-summary(Pas5[[2]])
-summary(Pas5[[4]])
+#Obtenemos los ultimos 9 segundos de la señal
+Datos_Ana_9 <- Datos_Ana %>% select(everything()) %>% filter(tiempo> max(tiempo)-9)
+#Representamos los ultimos 9 segundos de la señal
+g <- ggplot(Datos_Ana_9, aes(x = tiempo, y = mv)) + 
+  geom_line(col="blue") +
+  labs(title = "Fichero Analogico", x = "time", y = "data") 
 
-summary(Pas6[[2]])
-summary(Pas6[[4]])
+ggplotly(g)
 
-res1 <- Pas1[[2]] %>% 
-  summarise(across(everything(), mean))
-res1
-res1_2 <-  Pas1[[4]] %>% 
-  summarise(across(everything(), mean))
-res1_2
-
-res1_3 <- Pas1[[1]]
-res1_3
-
-res1_4 <- Pas1[[3]]
-res1_4
-
-pas1 <- data.frame(res1,res1_2,res1_3, res1_4[7:10])
-pas1
-
-#Ahora hacemos lo mismo con cada paciente
-#pas2
-#Obtenemos las media
-res2 <- Pas2[[2]] %>% 
-  summarise(across(everything(), mean))
-res2
-res2_2 <-  Pas2[[4]] %>% 
-  summarise(across(everything(), mean)) 
-res2_2
-
-res2_3 <- Pas2[[1]]
-res2_3
-
-res2_4 <- Pas2[[3]]
-res2_4
-
-pas2 <- data.frame(res2,res2_2,res2_3, res2_4[7:10]) #Creamos el df
-pas2
-
-#Pas 3
-
-res3 <- Pas3[[2]] %>% 
-  summarise(across(everything(), mean))
-res3
-res3_2 <-  Pas3[[4]] %>% 
-  summarise(across(everything(), mean))
-res3_2
-
-res3_3 <- Pas3[[1]]
-res3_3
-
-res3_4 <- Pas3[[3]]
-res3_4
-
-pas3 <- data.frame(res3,res3_2,res3_3, res3_4[7:10])#Creamos el df
-pas3
-
-#Pas 4
-
-res4 <- Pas4[[2]] %>% 
-  summarise(across(everything(), mean))
-res4
-res4_2 <-  Pas4[[4]] %>% 
-  summarise(across(everything(), mean))
-res4_2
-
-res4_3 <- Pas4[[1]]
-res4_3
-
-res4_4 <- Pas4[[3]]
-res4_4
-
-pas4 <- data.frame(res4,res4_2,res4_3, res4_4[7:10]) #Creamos el df
-pas4
-
-#Pas 5
-
-res5 <- Pas5[[2]] %>% 
-  summarise(across(everything(), mean))
-res5
-res5_2 <-  Pas5[[4]] %>% 
-  summarise(across(everything(), mean))
-res5_2
-
-res5_3 <- Pas5[[1]]
-res5_3
-
-res5_4 <- Pas5[[3]]
-res5_4
-
-pas5 <- data.frame(res5,res5_2,res5_3, res5_4[7:10]) #Creamos el df
-pas5
-
-#Pas 6
-
-res6 <- Pas6[[2]] %>% 
-  summarise(across(everything(), mean)) #Obtenemos las media
-res6
-res6_2 <-  Pas6[[4]] %>% 
-  summarise(across(everything(), mean))
-res6_2
-
-res6_3 <- Pas6[[1]]
-res6_3
-
-res6_4 <- Pas6[[3]]
-res6_4
-
-pas6 <- data.frame(res6,res6_2,res6_3, res6_4[7:10]) #Creamos el df
-pas6
-
-
-df <-rbind(pas1,pas2,pas3,pas4,pas5,pas6) #Creamos el df definitivo
-df 
-
-#Por ultimo uniremos los registros para crear fecha y hora
-df$Fecha <- paste(df$Dia, df$Mes, df$Anyo, sep = "/") #Usamos paste para crear la varible fecha
-df$Hora <- paste(df$Hor, df$Min, df$Seg, sep = ":") #Usamos paste para crear la varible hora
-df <- df %>%
-  select(-c(Dia, Mes, Anyo, Hor, Min, Seg)) #Quitamos las variables que ya nos sirven
-df
+#Vemos que los resultados concuerdan con el modelo proporcionado
 
 ```
 
