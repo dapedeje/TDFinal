@@ -736,9 +736,25 @@ Según la [Biblioteca Nacional de Medicina](https://medlineplus.gov/spanish/ency
 ##PREGUNTAS
 - Comparación en el ritmo cardiaco del feto y su evolución a lo largo de infancia 
 y juventud.
+```{r}
+
+```
+
 
 - Comparación entre la presión uterina y el ritmo del feto y de la madre.
+```{r}
+
+```
+
 
 - Comparar con datos exteriores.
+```{r}
+
+```
+
 
 - Con los datos aportados, comparar la posibilidad de desarrollar enfermedades.
+```{r}
+
+```
+
