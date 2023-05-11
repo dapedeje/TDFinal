@@ -1,35 +1,24 @@
 ---
 title: "Trabajo final"
-subtitle: Tratamiento de Datos. Grado en Ciencia de Datos- UV
 author: "Equipo H"
-#Pone la fecha de generación del documento
-date:  "`r Sys.Date()`"  #Pondría la fecha del día actual
-# Para que en lugar de "Contents" ponga "Indice" al incluir la tabla de contenido
-
-params:
-  lang: ES
-lang: "`r switch(params$lang, ES = 'es-ES', EN = 'en-US')`"
-
-# Por defecto se generará un salida html
-# Si si quieres otras salidas o varias de ellas descomenta lo que proceda
+date: "`r Sys.Date()`"
 output:
-# Salida pdf. Si se incluye código en LaTex necesitarás tener instalado un compilador de Latex
-  pdf_document:
-    toc: yes      # Tabla de contenido (índice)
-    toc_depth: 3  # Número de niveles de la tabla de contenido (índice) # 1, ##2,###3
-#    number_sections: yes # Numeración de las secciones
-# Salida html, 
   html_document:
     echo: yes
     number_sections: yes
-    theme: lumen    # Aspecto y estilo,otras opciones: cerulean, journal, flatly, darkly, readable, spacelab, united, cosmo, lumen, paper, sandstone, simplex, and yeti 
+    theme: lumen
     toc: yes
-# Salida html_notebook, como html, pero con algunas opciones de visualización
+  pdf_document:
+    toc: yes
+    toc_depth: 3
   html_notebook:
     echo: yes
     number_sections: yes
     toc: yes
-# Esto nos permite traducir estas etiquetas para que aparezcan en otro idioma en caso de que se usen en el documento para referenciar a figuras, tablas, etc
+params:
+  lang: ES
+lang: "`r switch(params$lang, ES = 'es-ES', EN = 'en-US')`"
+subtitle: "Tratamiento de Datos. Grado en Ciencia de Datos- UV"
 language:
   label:
     fig: 'Figura '
@@ -87,7 +76,7 @@ Tenemos esta parte para instalar los paquetes necesarios si es que el usuario no
 
 # Especificamos las librerías necesarias en esta lista
 
-packages = c("tidyverse","knitr")
+packages = c("tidyverse","knitr","plotly")
 
 #use this function to check if each package is on the local machine
 #if a package is installed, it will be loaded
@@ -110,7 +99,7 @@ En este apartado tenemos las funciones que nos permitiran leer los ficheros bina
 
 ```{r}
 LeerCabDig <- function(ruta) {
-  #Nombramos las varibles que debe tener esta cabezera
+  #Nombramos las varibles que debe tener esta cabecera
   NomVar <- c("Dia",
               "Mes",
               "Anyo",
@@ -189,7 +178,7 @@ LeerFicheroAnalogico <- function(ruta) {
   fich <- file(RD, "rb")
   #Leemos todo el fichero con los datos en formato de 2 bits
   ContFich <- readBin(fich,what = integer(),
-                      n = N,size = 2, signed = F)
+                      n = N,size = 2, signed = T)
   Cont <- data.frame(ContFich) #Creamos un dataframe
   names(Cont) <- Nvar #Cambiamos el nombre
   close(fich) #Cerramos fichero
@@ -217,19 +206,44 @@ LeerFicheroDigital <- function(ruta) {
   
 }
 
+#Funcion para obtener los datos de todos los ficheros
 ObData <- function(ruta){
+  
   CaDi <- LeerCabDig(ruta)
   DfDigital <- LeerFicheroDigital(ruta)
-
   CaAna <- LeerCabAna(ruta)
-  DfAna <- LeerFicheroDigital(ruta)
+  DfAna <- LeerFicheroAnalogico(ruta)
   
-  return(list(CaDi,DfDigital, CaAna, DfAna))
+  return(list(CaDi,DfDigital,CaAna,DfAna)) #Devolvemos una lista con todos los DF de los datos
 } 
+
+
+#Funcion para crear la variable tiempo del fichero digital
+CrearTiempoDig <- function(df){
+  # Creamos la variable del tiempo para el fichero digital 
+  tiempo <- seq(0, length.out = nrow(df), by = 0.25)
+  
+  
+  
+  return(tiempo)
+}
+
+
+#Funcion para crear la variable tiempo del fichero Analogico
+CrearTiempoAna <- function(df){
+  #Frecuencia de muestreo = 1000
+  Fm <- 1000
+  # Creamos la variable del tiempo para el fichero Analogico 
+  tiempo_analogico <- seq(from = 0, to = (nrow(df)-1)/Fm, by = 1/Fm)
+  
+  return(tiempo_analogico)
+}
 
 ```
 
 Ahora procederemos a leer los ficheros de la carpeta data
+
+
 
 ```{r}
 #Declaramos las rutas donde estan los datos de los pacientes
@@ -240,9 +254,6 @@ rutas <- c("data/data/0519xxxiii14/06_02_2023/14.20.34",
            "data/data/ecg5_210xlxi81_IP_39_eBR_BRP_720/12.31.15",
            "data/data/ecg5_210xlxi81_IP_39_eBR_BRP_720/12.49.57"
            )
-
-#Ahora obtenemos los datos de cada paciente.
-
 Pas1 <- ObData(rutas[1])
 Pas2 <- ObData(rutas[2])
 Pas3 <- ObData(rutas[3])
@@ -250,48 +261,53 @@ Pas4 <- ObData(rutas[4])
 Pas5 <- ObData(rutas[5])
 Pas6 <- ObData(rutas[6])
 
+#Probamos a hacer la lectura de los datos de un paciente de prueba para ver si concuerda con lo que nos deberia salir:
+Datos <- ObData(rutas[4])
+Cab_Dig <- as.data.frame(Datos[1])
+Datos_Dig <- as.data.frame(Datos[2])
+Cab_Ana <- as.data.frame(Datos[3])
+Datos_Ana <- as.data.frame(Datos[4])
+
+#Creamos la variable tiempo para los datos digitales
+tiempo <- CrearTiempoDig(Datos_Dig)
+#Añadimos la variable tiempo a nuestro df de datos digitales
+Datos_Dig <- Datos_Dig %>% mutate(tiempo = tiempo)
+
+#Creamos la variable tiempo para los datos Analogicos
+tiempo <- CrearTiempoAna(Datos_Ana)
+#Añadimos la variable tiempo a nuestro df de datos Analogicos
+Datos_Ana <- Datos_Ana %>% mutate(tiempo = tiempo)
 ```
+
 Ahora vamos a unirlo todo:
 
 ```{r}
-
 Pas1[[2]] #Podemos ver que el dataframe del paciente 1 tiene varias muestras por lo que para este caso podemos ver que podemos usar la media para representar cada una de las variables
-
 #Usaremos la media para crear el df que usaremos, ya que así será más facil hacer los gráficos
 summary(Pas1[[2]])
 summary(Pas1[[4]])
-
 summary(Pas2[[2]])
 summary(Pas2[[4]])
-
 summary(Pas3[[2]])
 summary(Pas3[[4]])
-
 summary(Pas4[[2]])
 summary(Pas4[[4]])
-
 summary(Pas5[[2]])
 summary(Pas5[[4]])
-
 summary(Pas6[[2]])
 summary(Pas6[[4]])
-
 res1 <- Pas1[[2]] %>% 
   summarise(across(everything(), mean))
 res1
 res1_2 <-  Pas1[[4]] %>% 
   summarise(across(everything(), mean))
 res1_2
-
 res1_3 <- Pas1[[1]]
 res1_3
-
 res1_4 <- Pas1[[3]]
 res1_4
-
 pas1 <- data.frame(res1,res1_2,res1_3, res1_4[7:10])
 pas1
-
 #Ahora hacemos lo mismo con cada paciente
 #pas2
 #Obtenemos las media
@@ -301,100 +317,419 @@ res2
 res2_2 <-  Pas2[[4]] %>% 
   summarise(across(everything(), mean)) 
 res2_2
-
 res2_3 <- Pas2[[1]]
 res2_3
-
 res2_4 <- Pas2[[3]]
 res2_4
-
 pas2 <- data.frame(res2,res2_2,res2_3, res2_4[7:10]) #Creamos el df
 pas2
-
 #Pas 3
-
 res3 <- Pas3[[2]] %>% 
   summarise(across(everything(), mean))
 res3
 res3_2 <-  Pas3[[4]] %>% 
   summarise(across(everything(), mean))
 res3_2
-
 res3_3 <- Pas3[[1]]
 res3_3
-
 res3_4 <- Pas3[[3]]
 res3_4
-
 pas3 <- data.frame(res3,res3_2,res3_3, res3_4[7:10])#Creamos el df
 pas3
-
 #Pas 4
-
 res4 <- Pas4[[2]] %>% 
   summarise(across(everything(), mean))
 res4
 res4_2 <-  Pas4[[4]] %>% 
   summarise(across(everything(), mean))
 res4_2
-
 res4_3 <- Pas4[[1]]
 res4_3
-
 res4_4 <- Pas4[[3]]
 res4_4
-
 pas4 <- data.frame(res4,res4_2,res4_3, res4_4[7:10]) #Creamos el df
 pas4
-
 #Pas 5
-
 res5 <- Pas5[[2]] %>% 
   summarise(across(everything(), mean))
 res5
 res5_2 <-  Pas5[[4]] %>% 
   summarise(across(everything(), mean))
 res5_2
-
 res5_3 <- Pas5[[1]]
 res5_3
-
 res5_4 <- Pas5[[3]]
 res5_4
-
 pas5 <- data.frame(res5,res5_2,res5_3, res5_4[7:10]) #Creamos el df
 pas5
-
 #Pas 6
-
 res6 <- Pas6[[2]] %>% 
   summarise(across(everything(), mean)) #Obtenemos las media
 res6
 res6_2 <-  Pas6[[4]] %>% 
   summarise(across(everything(), mean))
 res6_2
-
 res6_3 <- Pas6[[1]]
 res6_3
-
 res6_4 <- Pas6[[3]]
 res6_4
-
 pas6 <- data.frame(res6,res6_2,res6_3, res6_4[7:10]) #Creamos el df
 pas6
-
-
 df <-rbind(pas1,pas2,pas3,pas4,pas5,pas6) #Creamos el df definitivo
 df 
-
 #Por ultimo uniremos los registros para crear fecha y hora
 df$Fecha <- paste(df$Dia, df$Mes, df$Anyo, sep = "/") #Usamos paste para crear la varible fecha
 df$Hora <- paste(df$Hor, df$Min, df$Seg, sep = ":") #Usamos paste para crear la varible hora
 df <- df %>%
   select(-c(Dia, Mes, Anyo, Hor, Min, Seg)) #Quitamos las variables que ya nos sirven
 df
+```
 
+```{r}
+#REPRESENTACION
+
+#GRAFICO FICHERO DIGITAL
+
+#Nos quedamos con los datos con el tiempo por debajo de 301
+datos_Dig_300 <- Datos_Dig %>% select(everything()) %>% filter(tiempo <= 300)
+
+#Adaptamos los datos para poder representarlos:
+datos_Dig_300 <- gather(datos_Dig_300, key = "Tipo", value = "value", -tiempo)
+
+#Representamos todas las variables en funcion del tiempo:
+ggplot(datos_Dig_300, aes(x = tiempo, y = value, color = Tipo)) + 
+  geom_line() + 
+  facet_wrap(~ Tipo, scales = "free") + 
+  labs( x = "Tiempo", y = "Valor")
+
+#GRAFICO FICHERO ANALÓGICO
+
+#Obtenemos los ultimos 9 segundos de la señal
+Datos_Ana_9 <- Datos_Ana %>% select(everything()) %>% filter(tiempo> max(tiempo)-9)
+#Representamos los ultimos 9 segundos de la señal
+g <- ggplot(Datos_Ana_9, aes(x = tiempo, y = mv)) + 
+  geom_line(col="blue") +
+  labs(title = "Fichero Analogico", x = "time", y = "data") 
+
+ggplotly(g)
+
+#Vemos que los resultados concuerdan con el modelo proporcionado
+
+```
+#Detección de datos anomalos y faltantes
+En esta parte comprobaremos la presencia de datos faltantes y de outliers, para ello ejecutaremos este código.
+```{r}
+#Primero miraremos si exiten algun NA en nuestros datos
+#Una vez creado el data frame, debemos indagar para, en el caso de que halla, 
+#encontrar los datos faltantes, esto lo llevaremos a cabo mediante
+#la función is.na:
+#Devolverá un vector lógico de la misma longitud que el vector o columna que se está verificando, donde cada elemento será TRUE si el valor correspondiente es faltante,
+#y FALSE en caso contrario.
+
+#Vemos cada variable con respecto al data frame:
+
+datos_faltantes1<-is.na(df$HR1)
+datos_faltantes1
+
+datos_faltantes2<-is.na(df$HR2)
+datos_faltantes2
+
+datos_faltantes3<-is.na(df$MHR)
+datos_faltantes3
+
+datos_faltantes4<-is.na(df$TOCO)
+datos_faltantes4
+
+datos_faltantes5<-is.na(df$SPO2)
+datos_faltantes5
+
+datos_faltantes6<-is.na(df$VCP)
+datos_faltantes6
+
+datos_faltantes7<-is.na(df$Ps)
+datos_faltantes7
+
+datos_faltantes8<-is.na(df$Pd)
+datos_faltantes8
+
+datos_faltantes9<-is.na(df$Pm)
+datos_faltantes9
+
+datos_faltantes10<-is.na(df$HR1.1)
+datos_faltantes10
+
+datos_faltantes10<-is.na(df$HR2.1)
+datos_faltantes10
+
+datos_faltantes11<-is.na(df$MHR.1)
+datos_faltantes11
+
+datos_faltantes12<-is.na(df$TOCO.1)
+datos_faltantes12
+
+datos_faltantes13<-is.na(df$SPO2.1)
+datos_faltantes13
+
+datos_faltantes14<-is.na(df$VCP.1)
+datos_faltantes14
+
+datos_faltantes15<-is.na(df$Ps.1)
+datos_faltantes15
+
+datos_faltantes16<-is.na(df$Pd.1)
+datos_faltantes16
+
+datos_faltantes17<-is.na(df$Pm.1)
+datos_faltantes17
+
+datos_faltantes18<-is.na(df$FrecMuestreo)
+datos_faltantes18
+
+datos_faltantes19<-is.na(df$NumCanales)
+datos_faltantes19
+
+datos_faltantes20<-is.na(df$ResolADC)
+datos_faltantes20
+
+datos_faltantes21<-is.na(df$VolatageMax)
+datos_faltantes21
+
+datos_faltantes22<-is.na(df$VolatageMin)
+datos_faltantes22
+
+datos_faltantes23<-is.na(df$FrecMuestreo.1)
+datos_faltantes23
+
+datos_faltantes24<-is.na(df$Fecha)
+datos_faltantes24
+
+datos_faltantes25<-is.na(df$Hora)
+datos_faltantes25
+
+
+#Como resulta todo FALSE no hay ningún dato faltante
+```
+
+```{r}
+
+#Ahora lo que si es posible ver es que hay valores que no tienen muchos sentido, ya que hay valores de 0 en cosas como los latidos por minuto, o presión sanguinia, lo cual no tiene mucho sentido, por lo tanto esos datos los convertiremos en NAs para no tomarlos muy encuenta
+#Además aplicaremos algún metodo para comprobar que si hay más valores extraños, para lo cual definiremos las siguientes funciones
+#Definimos la función para dectectar outliers 
+# MADM median absolute deviation from the median
+madm <- function(x, na.rm = T) {  
+  if (na.rm){
+    x <- x[!is.na(x)]
+  }
+  res <- 1.4826 * median(abs(x - median(x)))
+  return(res)
+}
+Estadisticos <- function(x, na.rm = T){
+  if (na.rm){
+    x <- x[!is.na(x)]
+  }
+  m <- mean(x)
+  n <- length(x)
+  s <- sd(x)
+  Q <- IQR(x)
+  MADM <- madm(x)
+  return(c(median = m,length = n, SD = s, IQR = Q,madm = MADM))
+  
+}
+
+# Regla 3 sigma
+reglasigma <- function(x,na.rm = T) { 
+  rest1 <- Estadisticos(x)[1]
+  rest2 <-Estadisticos(x)[3]
+  return(x < rest1 - 3*madm(x) | x > rest1 + 3 * rest2)
+  }
+
+# Identificador Hampel
+reglahampel <- function(x, na.rm = T) {  
+  
+  return( x < median(x, na.rm = T) - 3*madm(x, na.rm = T) | 
+            x > median(x, na.rm = T) + 3*madm(x, na.rm = T))
+  }
+
+# Regla boxplot
+reglaboxplot <- function(x,na.rm = T) {
+  return(x < quantile(x, 1/4, na.rm = T) - 1.5 *IQR(x, na.rm = T) |
+           x > quantile(x, 3/4, na.rm = T) + 1.5 *IQR(x, na.rm = T))
+  }
+# Percentiles
+reglapercentil <- function(x) {  
+  return(x < quantile(x, 0.05, na.rm = T) | x > quantile(x, 0.05, na.rm = T))
+}
+
+metodos <- list(reglasigma=reglasigma,reglahampel=reglahampel,reglaboxplot=reglaboxplot,reglapercentil=reglapercentil)
+
+summary(Pas1[[2]]) #Podemos ver que HR2, HR1, Toco,ps,pd,pm tiene valores minimos de 0, lo cual sabemos que nos es posibel, ya que correcponden a los latidos del corazón y o presión de diferentes partes del cuerpo
+#Lo ideal sería nobralos como NA
+r <- Pas1[[2]]
+r<-r %>%
+  mutate(HR1 = ifelse(HR1 == 0,NA,HR1)) %>%
+  mutate(HR2 = ifelse(HR2 == 0,NA,HR2)) %>%
+  mutate(TOCO = ifelse(TOCO == 0,NA,TOCO)) %>%
+  mutate(Ps = ifelse(Ps == 0,NA,Ps)) %>%
+  mutate(Pd = ifelse(Pd == 0,NA,Pd)) %>%
+  mutate(Pm = ifelse(Pm == 0,NA,Pm))
+  
+summary(r)
+#Usamos las funciones para comprobar la presencia de outliers
+r %>%
+  summarise(across(everything(), metodos))
+  
+Pas1[[2]] <- r
+summary(Pas1[[2]])
+
+summary(Pas1[[4]]) #Parece normal
+
+#Ahora hacemos esto para cada paciente
+r <- Pas2[[2]]
+r<-r %>%
+  mutate(HR1 = ifelse(HR1 == 0,NA,HR1)) %>%
+  mutate(HR2 = ifelse(HR2 == 0,NA,HR2)) %>%
+  mutate(TOCO = ifelse(TOCO == 0,NA,TOCO)) %>%
+  mutate(Ps = ifelse(Ps == 0,NA,Ps)) %>%
+  mutate(Pd = ifelse(Pd == 0,NA,Pd)) %>%
+  mutate(Pm = ifelse(Pm == 0,NA,Pm))
+  
+summary(r)
+#Usamos las funciones para comprobar la presencia de outliers
+r %>%
+  summarise(across(everything(), metodos))
+  
+
+Pas2[[2]] <- r
+summary(Pas2[[2]])
+
+summary(Pas2[[4]]) #Parece normal
+
+r <- Pas3[[2]]
+r<-r %>%
+  mutate(HR1 = ifelse(HR1 == 0,NA,HR1)) %>%
+  mutate(HR2 = ifelse(HR2 == 0,NA,HR2)) %>%
+  mutate(TOCO = ifelse(TOCO == 0,NA,TOCO)) %>%
+  mutate(Ps = ifelse(Ps == 0,NA,Ps)) %>%
+  mutate(Pd = ifelse(Pd == 0,NA,Pd)) %>%
+  mutate(Pm = ifelse(Pm == 0,NA,Pm))
+  
+summary(r)
+#Usamos las funciones para comprobar la presencia de outliers
+r %>%
+  summarise(across(everything(), metodos))
+  
+Pas3[[2]] <- r
+summary(Pas3[[2]])
+
+summary(Pas3[[4]]) #Parece normal
+
+r <- Pas4[[2]]
+r<-r %>%
+  mutate(HR1 = ifelse(HR1 == 0,NA,HR1)) %>%
+  mutate(HR2 = ifelse(HR2 == 0,NA,HR2)) %>%
+  mutate(TOCO = ifelse(TOCO == 0,NA,TOCO)) %>%
+  mutate(Ps = ifelse(Ps == 0,NA,Ps)) %>%
+  mutate(Pd = ifelse(Pd == 0,NA,Pd)) %>%
+  mutate(Pm = ifelse(Pm == 0,NA,Pm))
+  
+summary(r)
+#Usamos las funciones para comprobar la presencia de outliers
+r %>%
+  summarise(across(everything(), metodos))
+  
+Pas4[[2]] <- r
+summary(Pas4[[2]])
+
+summary(Pas4[[4]]) #Parece normal
+
+r <- Pas5[[2]]
+r<-r %>%
+  mutate(HR1 = ifelse(HR1 == 0,NA,HR1)) %>%
+  mutate(HR2 = ifelse(HR2 == 0,NA,HR2)) %>%
+  mutate(TOCO = ifelse(TOCO == 0,NA,TOCO)) %>%
+  mutate(Ps = ifelse(Ps == 0,NA,Ps)) %>%
+  mutate(Pd = ifelse(Pd == 0,NA,Pd)) %>%
+  mutate(Pm = ifelse(Pm == 0,NA,Pm))
+  
+summary(r)
+#Usamos las funciones para comprobar la presencia de outliers
+r %>%
+  summarise(across(everything(), metodos))
+  
+Pas5[[2]] <- r
+summary(Pas5[[2]])
+
+summary(Pas5[[4]]) #Parece normal
+
+
+r <- Pas6[[2]]
+r<-r %>%
+  mutate(HR1 = ifelse(HR1 == 0,NA,HR1)) %>%
+  mutate(HR2 = ifelse(HR2 == 0,NA,HR2)) %>%
+  mutate(TOCO = ifelse(TOCO == 0,NA,TOCO)) %>%
+  mutate(Ps = ifelse(Ps == 0,NA,Ps)) %>%
+  mutate(Pd = ifelse(Pd == 0,NA,Pd)) %>%
+  mutate(Pm = ifelse(Pm == 0,NA,Pm))
+  
+summary(r)
+#Usamos las funciones para comprobar la presencia de outliers
+r %>%
+  summarise(across(everything(), metodos))
+  
+Pas6[[2]] <- r
+summary(Pas6[[2]])
+
+summary(Pas6[[4]]) #Parece normal
+
+#Podemos ver que esto nos esta arrojando resultados variables, pero es lo normal debido a que los muchos de estos metodos discrimina mucho, pero podemos ver que las reglas de hampel no detectan outliers lo cual si vemos los datos parece ser lo más compresible
 ```
 
 
+```{r}
+str(df)
+```
+
+##   Comparación de latidos por minuto del feto y de la madre.
+
+```{r}
+# Transformar los datos a formato data frame
+datos <- data.frame(x = rep(df$MHR, 2),
+                         y = c(df$HR1, df$HR2),
+                         variable = rep(c("HR1", "HR2"), each = nrow(df)))
+# Crear un gráfico de línea con una línea para cada variable
+grafico <- ggplot(data = datos, aes(x = x, y = y, color = variable)) +
+  geom_line() +
+  labs(x = "Latidos por minuto maternos", y = "Latidos por minuto del feto", title = "Comparación entre los latidos por minuto maternos y los fetales")
+ggplotly(grafico)
+tabla <-  table(df$HR1, df$MHR)
+tabla
+```
+
+Cómo podemos observar el número de latidos por minuto del feto es mayor que el número de latidos de la madre. Y que conforme aumentan los latidos maternos, podemos observar que los fetales lo hacen. Así que podemos llegar a la conclusión que a priori, los latidos fetales dependen de los latidos maternos.
+
+## Búsqueda de variaciones en el ritmo cardíaco materno dependiendo del nivel de actividad uterina.
+
+```{r}
+tabla <-  table(df$TOCO, df$MHR)
+tabla
+grafico <- ggplot(data = df, aes(x = MHR, y = TOCO, color = "red")) +
+  geom_point() +
+  labs(x = "Latidos por minuto maternos", y = "Presión uterina", title = "Comparación entre los latidos por minuto maternos y la presión uterina")
+ggplotly(grafico)
+```
+
+A priori se puede observar que el valor más alto de la presión uterina se relaciona con el valor más alto de los latidos por minuto maternos. Sin embargo, aunque en general se pueda observar esa relación, hay una observación la cual se sale de la norma que queremos demostrar ya que tiene unos latidos por minuto altos pero, a pesar de esto, no tiene un valor de la presión uterina elevado. Así que podemos llegar a la conclusión de que la persión uterina influye a la hora de subir los latidos por minuto maternos, pero que es un factor no la causa principal.
+
+## Variaciones entre la presión arterial sistólica y la diastólica.
+
+```{r}
+tabla <-  table(df$Ps, df$Pd)
+tabla
+grafico <- ggplot(data = df, aes(x = Ps, y = Pd, color = "red")) +
+  geom_point() +
+  labs(x = "Presión sistólica", y = "Presión diastólica", title = "Comparación entre la presión sistólica y la diastólica")
+ggplotly(grafico)
+```
+
+Según la [Biblioteca Nacional de Medicina](https://medlineplus.gov/spanish/ency/article/000468.htm) los valores de la presión sistólica deben estar inferiores a 120 y la diastólica debe estar por debajo de 80. Las 2 observaciones que tienen valores, 1 tiene la presión sistólica y diastólica dentro del rango; en cambio, la otra observación si tiene una presión arterial sistólica más alta que la recomendable. Cosa la cuál le puede provocar enfermadades en un futuro.
 
