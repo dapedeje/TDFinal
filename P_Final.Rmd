@@ -754,7 +754,17 @@ y juventud.
 
 
 - Con los datos aportados, comparar la posibilidad de desarrollar enfermedades.
+Para responder esta pregunta debemos de verificar si hay alguna relación entre las variables, para sacaremos la correclación entre las variables usando pearson y spearman
 ```{r}
+#Podemos ver que las variables Ps,Pd y Pm tienen una correlación muy alta
+df %>%
+  select(is.numeric) %>%
+  cor(method = "pearson")
+#Si usamos spearman podemos ver que la correlación de las variables antes mencionada
+#es incluso mayor
+df %>%
+  select(is.numeric) %>%
+  cor(method = "spearman")
 
 ```
 
