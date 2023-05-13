@@ -790,5 +790,34 @@ Una vez tenemos esta información vamos a vizualizar las variables que tiene muc
 ggplot(data = df, aes(x = Ps, y = Pd)) + 
   geom_point(color = "blue") + 
   geom_smooth(method = "lm", color = "firebrick")
+
+#Esto aplica también para VCP, el cual es una variable que mide el tiempo
+ggplot(data = df, aes(x = Ps, y = VCP)) + 
+  geom_point(color = "blue") + 
+  geom_smooth(method = "lm", color = "firebrick")
+
+ggplot(data = df, aes(x = Pd, y = VCP)) + 
+  geom_point(color = "blue") + 
+  geom_smooth(method = "lm", color = "firebrick")
+
 ```
+```{r}
+#Ahora vamos a ver si existe alguna clase de realción entre las varibles, para los
+#df de pacientes que estan embarazadas las cuales son el paciente 4 y 6
+df4 <- Pas4[[2]]
+df6 <- Pas6[[2]]
+
+#Veremos si existe alguna correalación entre las varibles usando pearson y spearman
+#Por el momento si usamos pearson podemos ver que de momento no hay ninguna relación líneal entre las varibles
+df4 %>%
+  drop_na() %>%
+  cor(method = "pearson")
+#Pero si hacemos uso de otro metodo vemos que HR2 y HR1 guaradan una relación del 0.80
+df4 %>%
+  drop_na() %>%
+  cor(method = "spearman")
+
+
+```
+
 
