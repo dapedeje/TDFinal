@@ -566,8 +566,8 @@ summary(Pas1[[2]]) #Podemos ver que HR2, HR1, Toco,ps,pd,pm tiene valores minimo
 #Lo ideal sería nobralos como NA
 r <- Pas1[[2]]
 r<-r %>%
-  mutate(HR1 = ifelse(HR1 == 0,NA,HR1)) %>%
-  mutate(HR2 = ifelse(HR2 == 0,NA,HR2)) %>%
+  mutate(HR1 = ifelse(110 <= HR1 & HR1 <= 160,HR1,NA)) %>%
+  mutate(HR2 = ifelse(110 <= HR1 & HR1 <= 160,HR1,NA)) %>%
   mutate(TOCO = ifelse(TOCO == 0,NA,TOCO)) %>%
   mutate(Ps = ifelse(Ps == 0,NA,Ps)) %>%
   mutate(Pd = ifelse(Pd == 0,NA,Pd)) %>%
@@ -586,8 +586,8 @@ summary(Pas1[[4]]) #Parece normal
 #Ahora hacemos esto para cada paciente
 r <- Pas2[[2]]
 r<-r %>%
-  mutate(HR1 = ifelse(HR1 == 0,NA,HR1)) %>%
-  mutate(HR2 = ifelse(HR2 == 0,NA,HR2)) %>%
+  mutate(HR1 = ifelse(110 <= HR1 & HR1 <= 160,HR1,NA)) %>%
+  mutate(HR2 = ifelse(110 <= HR1 & HR1 <= 160,HR1,NA)) %>%
   mutate(TOCO = ifelse(TOCO == 0,NA,TOCO)) %>%
   mutate(Ps = ifelse(Ps == 0,NA,Ps)) %>%
   mutate(Pd = ifelse(Pd == 0,NA,Pd)) %>%
@@ -606,13 +606,13 @@ summary(Pas2[[4]]) #Parece normal
 
 r <- Pas3[[2]]
 r<-r %>%
-  mutate(HR1 = ifelse(HR1 == 0,NA,HR1)) %>%
-  mutate(HR2 = ifelse(HR2 == 0,NA,HR2)) %>%
+  mutate(HR1 = ifelse(110 <= HR1 & HR1 <= 160,HR1,NA)) %>%
+  mutate(HR2 = ifelse(110 <= HR1 & HR1 <= 160,HR1,NA)) %>%
   mutate(TOCO = ifelse(TOCO == 0,NA,TOCO)) %>%
   mutate(Ps = ifelse(Ps == 0,NA,Ps)) %>%
   mutate(Pd = ifelse(Pd == 0,NA,Pd)) %>%
   mutate(Pm = ifelse(Pm == 0,NA,Pm))
-  
+
 summary(r)
 #Usamos las funciones para comprobar la presencia de outliers
 r %>%
@@ -625,8 +625,8 @@ summary(Pas3[[4]]) #Parece normal
 
 r <- Pas4[[2]]
 r<-r %>%
-  mutate(HR1 = ifelse(HR1 == 0,NA,HR1)) %>%
-  mutate(HR2 = ifelse(HR2 == 0,NA,HR2)) %>%
+  mutate(HR1 = ifelse(110 <= HR1 & HR1 <= 160,HR1,NA)) %>%
+  mutate(HR2 = ifelse(110 <= HR1 & HR1 <= 160,HR1,NA)) %>%
   mutate(TOCO = ifelse(TOCO == 0,NA,TOCO)) %>%
   mutate(Ps = ifelse(Ps == 0,NA,Ps)) %>%
   mutate(Pd = ifelse(Pd == 0,NA,Pd)) %>%
@@ -644,13 +644,13 @@ summary(Pas4[[4]]) #Parece normal
 
 r <- Pas5[[2]]
 r<-r %>%
-  mutate(HR1 = ifelse(HR1 == 0,NA,HR1)) %>%
-  mutate(HR2 = ifelse(HR2 == 0,NA,HR2)) %>%
+  mutate(HR1 = ifelse(110 <= HR1 & HR1 <= 160,HR1,NA)) %>%
+  mutate(HR2 = ifelse(110 <= HR1 & HR1 <= 160,HR1,NA)) %>%
   mutate(TOCO = ifelse(TOCO == 0,NA,TOCO)) %>%
   mutate(Ps = ifelse(Ps == 0,NA,Ps)) %>%
   mutate(Pd = ifelse(Pd == 0,NA,Pd)) %>%
   mutate(Pm = ifelse(Pm == 0,NA,Pm))
-  
+
 summary(r)
 #Usamos las funciones para comprobar la presencia de outliers
 r %>%
@@ -664,8 +664,8 @@ summary(Pas5[[4]]) #Parece normal
 
 r <- Pas6[[2]]
 r<-r %>%
-  mutate(HR1 = ifelse(HR1 == 0,NA,HR1)) %>%
-  mutate(HR2 = ifelse(HR2 == 0,NA,HR2)) %>%
+  mutate(HR1 = ifelse(110 <= HR1 & HR1 <= 160,HR1,NA)) %>%
+  mutate(HR2 = ifelse(110 <= HR1 & HR1 <= 160,HR1,NA)) %>%
   mutate(TOCO = ifelse(TOCO == 0,NA,TOCO)) %>%
   mutate(Ps = ifelse(Ps == 0,NA,Ps)) %>%
   mutate(Pd = ifelse(Pd == 0,NA,Pd)) %>%
