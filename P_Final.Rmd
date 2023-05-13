@@ -76,7 +76,7 @@ Tenemos esta parte para instalar los paquetes necesarios si es que el usuario no
 
 # Especificamos las librerías necesarias en esta lista
 
-packages = c("tidyverse","knitr","plotly")
+packages = c("tidyverse","knitr","plotly","GGally")
 
 #use this function to check if each package is on the local machine
 #if a package is installed, it will be loaded
@@ -566,8 +566,8 @@ summary(Pas1[[2]]) #Podemos ver que HR2, HR1, Toco,ps,pd,pm tiene valores minimo
 #Lo ideal sería nobralos como NA
 r <- Pas1[[2]]
 r<-r %>%
-  mutate(HR1 = ifelse(HR1 == 0,NA,HR1)) %>%
-  mutate(HR2 = ifelse(HR2 == 0,NA,HR2)) %>%
+  mutate(HR1 = ifelse(110 <= HR1 & HR1 <= 160,HR1,NA)) %>%
+  mutate(HR2 = ifelse(110 <= HR1 & HR1 <= 160,HR1,NA)) %>%
   mutate(TOCO = ifelse(TOCO == 0,NA,TOCO)) %>%
   mutate(Ps = ifelse(Ps == 0,NA,Ps)) %>%
   mutate(Pd = ifelse(Pd == 0,NA,Pd)) %>%
@@ -586,8 +586,8 @@ summary(Pas1[[4]]) #Parece normal
 #Ahora hacemos esto para cada paciente
 r <- Pas2[[2]]
 r<-r %>%
-  mutate(HR1 = ifelse(HR1 == 0,NA,HR1)) %>%
-  mutate(HR2 = ifelse(HR2 == 0,NA,HR2)) %>%
+  mutate(HR1 = ifelse(110 <= HR1 & HR1 <= 160,HR1,NA)) %>%
+  mutate(HR2 = ifelse(110 <= HR1 & HR1 <= 160,HR1,NA)) %>%
   mutate(TOCO = ifelse(TOCO == 0,NA,TOCO)) %>%
   mutate(Ps = ifelse(Ps == 0,NA,Ps)) %>%
   mutate(Pd = ifelse(Pd == 0,NA,Pd)) %>%
@@ -606,13 +606,13 @@ summary(Pas2[[4]]) #Parece normal
 
 r <- Pas3[[2]]
 r<-r %>%
-  mutate(HR1 = ifelse(HR1 == 0,NA,HR1)) %>%
-  mutate(HR2 = ifelse(HR2 == 0,NA,HR2)) %>%
+  mutate(HR1 = ifelse(110 <= HR1 & HR1 <= 160,HR1,NA)) %>%
+  mutate(HR2 = ifelse(110 <= HR1 & HR1 <= 160,HR1,NA)) %>%
   mutate(TOCO = ifelse(TOCO == 0,NA,TOCO)) %>%
   mutate(Ps = ifelse(Ps == 0,NA,Ps)) %>%
   mutate(Pd = ifelse(Pd == 0,NA,Pd)) %>%
   mutate(Pm = ifelse(Pm == 0,NA,Pm))
-  
+
 summary(r)
 #Usamos las funciones para comprobar la presencia de outliers
 r %>%
@@ -625,8 +625,8 @@ summary(Pas3[[4]]) #Parece normal
 
 r <- Pas4[[2]]
 r<-r %>%
-  mutate(HR1 = ifelse(HR1 == 0,NA,HR1)) %>%
-  mutate(HR2 = ifelse(HR2 == 0,NA,HR2)) %>%
+  mutate(HR1 = ifelse(110 <= HR1 & HR1 <= 160,HR1,NA)) %>%
+  mutate(HR2 = ifelse(110 <= HR1 & HR1 <= 160,HR1,NA)) %>%
   mutate(TOCO = ifelse(TOCO == 0,NA,TOCO)) %>%
   mutate(Ps = ifelse(Ps == 0,NA,Ps)) %>%
   mutate(Pd = ifelse(Pd == 0,NA,Pd)) %>%
@@ -644,13 +644,13 @@ summary(Pas4[[4]]) #Parece normal
 
 r <- Pas5[[2]]
 r<-r %>%
-  mutate(HR1 = ifelse(HR1 == 0,NA,HR1)) %>%
-  mutate(HR2 = ifelse(HR2 == 0,NA,HR2)) %>%
+  mutate(HR1 = ifelse(110 <= HR1 & HR1 <= 160,HR1,NA)) %>%
+  mutate(HR2 = ifelse(110 <= HR1 & HR1 <= 160,HR1,NA)) %>%
   mutate(TOCO = ifelse(TOCO == 0,NA,TOCO)) %>%
   mutate(Ps = ifelse(Ps == 0,NA,Ps)) %>%
   mutate(Pd = ifelse(Pd == 0,NA,Pd)) %>%
   mutate(Pm = ifelse(Pm == 0,NA,Pm))
-  
+
 summary(r)
 #Usamos las funciones para comprobar la presencia de outliers
 r %>%
@@ -664,8 +664,8 @@ summary(Pas5[[4]]) #Parece normal
 
 r <- Pas6[[2]]
 r<-r %>%
-  mutate(HR1 = ifelse(HR1 == 0,NA,HR1)) %>%
-  mutate(HR2 = ifelse(HR2 == 0,NA,HR2)) %>%
+  mutate(HR1 = ifelse(110 <= HR1 & HR1 <= 160,HR1,NA)) %>%
+  mutate(HR2 = ifelse(110 <= HR1 & HR1 <= 160,HR1,NA)) %>%
   mutate(TOCO = ifelse(TOCO == 0,NA,TOCO)) %>%
   mutate(Ps = ifelse(Ps == 0,NA,Ps)) %>%
   mutate(Pd = ifelse(Pd == 0,NA,Pd)) %>%
@@ -761,7 +761,93 @@ ggplot(datos_comp2, aes(x = tiempo, y = value, color = variable)) +
 
 
 - Con los datos aportados, comparar la posibilidad de desarrollar enfermedades.
+Para responder esta pregunta debemos de verificar si hay alguna relación entre las variables, para sacaremos la correclación entre las variables usando pearson y spearman
 ```{r}
+#Podemos ver que las variables Ps,Pd y Pm tienen una correlación muy alta
+df %>%
+  select(is.numeric) %>%
+  cor(method = "pearson")
+#Si usamos spearman podemos ver que la correlación de las variables antes mencionada
+#es incluso mayor, además de establece una correalacíon con VCP  
+df %>%
+  select(is.numeric) %>%
+  cor(method = "spearman")
 
 ```
+Ahora vamos hacer gráficos usando la correlación para que se vea más claro:
+
+```{r}
+#Vamos solo a visualizar las variables que nos son más de interes
+#No prestaremos mucha atención a las demás ya que no parecen muy relevantes
+df %>%
+  select(HR1:Pm) %>%
+  ggcorr(label= T)
+
+#Como 
+df %>%
+  select(HR1:Pm) %>%
+  ggpairs()
+
+```
+Una vez tenemos esta información vamos a vizualizar las variables que tiene mucha relación.
+
+```{r}
+#Podemos ver en este gráfico, Pb y Ps siguen una distribución líneal,
+#Esto es debido a lo dicho con anterioridad, que siempre ha de estar proporcionado
+ggplot(data = df, aes(x = Ps, y = Pd)) + 
+  geom_point(color = "blue") + 
+  geom_smooth(method = "lm", color = "firebrick")
+
+#Esto aplica también para VCP, el cual es una variable que mide el tiempo
+ggplot(data = df, aes(x = Ps, y = VCP)) + 
+  geom_point(color = "blue") + 
+  geom_smooth(method = "lm", color = "firebrick")
+
+ggplot(data = df, aes(x = Pd, y = VCP)) + 
+  geom_point(color = "blue") + 
+  geom_smooth(method = "lm", color = "firebrick")
+
+```
+```{r}
+#Ahora vamos a ver si existe alguna clase de realción entre las varibles, para los
+#df de pacientes que estan embarazadas las cuales son el paciente 4 y 6
+df4 <- Pas4[[2]]
+df6 <- Pas6[[2]]
+
+#Veremos si existe alguna correalación entre las varibles usando pearson y spearman
+#Por el momento si usamos pearson podemos ver que de momento no hay ninguna relación líneal entre las varibles
+df4 %>%
+  drop_na() %>%
+  cor(method = "pearson")
+#Pero si hacemos uso de otro metodo vemos que HR2 y HR1 guaradan una relación del 0.80
+df4 %>%
+  drop_na() %>%
+  cor(method = "spearman")
+```
+Ahora haremos gráfico para las variables que tienen una correlación alta:
+```{r}
+
+df6 %>%
+  pivot_longer(cols = c("HR1","HR2"),names_to = "Latidos", values_to = "Valor") %>%
+  ggplot(aes(x = Latidos, y = Valor, color = Latidos)) + geom_boxplot()
+
+
+df6 %>%
+  drop_na(HR2) %>%
+  cor(method = "pearson")
+#Vemos que la relación se repite
+df6 %>%
+  drop_na(c("HR2","HR1")) %>%
+  cor(method = "spearman")
+
+df4 %>%
+  pivot_longer(cols = c("HR1","HR2"),names_to = "Latidos", values_to = "Valor") %>%
+  ggplot(aes(x = Latidos, y = Valor, color = Latidos)) + 
+  geom_boxplot()
+
+#Como conclución es muy interesante, ya que siempre los latidos de la madre y los del hijo deben ir a más o menos el 
+#mismo ritmo
+
+```
+Podemos ver que los latidos estan practicamente sincronizados esto es gracias a un efecto neuroacústico. 
 
