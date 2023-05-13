@@ -76,7 +76,7 @@ Tenemos esta parte para instalar los paquetes necesarios si es que el usuario no
 
 # Especificamos las librerías necesarias en esta lista
 
-packages = c("tidyverse","knitr","plotly")
+packages = c("tidyverse","knitr","plotly","GGally")
 
 #use this function to check if each package is on the local machine
 #if a package is installed, it will be loaded
@@ -761,10 +761,26 @@ df %>%
   select(is.numeric) %>%
   cor(method = "pearson")
 #Si usamos spearman podemos ver que la correlación de las variables antes mencionada
-#es incluso mayor
+#es incluso mayor, además de establece una correalacíon con VCP  
 df %>%
   select(is.numeric) %>%
   cor(method = "spearman")
 
 ```
+Ahora vamos hacer gráficos usando la correlación para que se vea más claro:
+
+```{r}
+#Vamos solo a visualizar las variables que nos son más de interes
+#No prestaremos mucha atención a las demás ya que no parecen muy relevantes
+df %>%
+  select(HR1:Pm) %>%
+  ggcorr(label= T)
+
+#Como 
+df %>%
+  select(HR1:Pm) %>%
+  ggpairs()
+
+```
+
 
