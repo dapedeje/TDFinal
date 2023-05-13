@@ -816,8 +816,31 @@ df4 %>%
 df4 %>%
   drop_na() %>%
   cor(method = "spearman")
+```
+Ahora haremos gráfico para las variables que tienen una correlación alta:
+```{r}
 
+df6 %>%
+  pivot_longer(cols = c("HR1","HR2"),names_to = "Latidos", values_to = "Valor") %>%
+  ggplot(aes(x = Latidos, y = Valor, color = Latidos)) + geom_boxplot()
+
+
+df6 %>%
+  drop_na(HR2) %>%
+  cor(method = "pearson")
+#Vemos que la relación se repite
+df6 %>%
+  drop_na(c("HR2","HR1")) %>%
+  cor(method = "spearman")
+
+df4 %>%
+  pivot_longer(cols = c("HR1","HR2"),names_to = "Latidos", values_to = "Valor") %>%
+  ggplot(aes(x = Latidos, y = Valor, color = Latidos)) + 
+  geom_boxplot()
+
+#Como conclución es muy interesante, ya que siempre los latidos de la madre y los del hijo deben ir a más o menos el 
+#mismo ritmo
 
 ```
-
+Podemos ver que los latidos estan practicamente sincronizados esto es gracias a un efecto neuroacústico. 
 
