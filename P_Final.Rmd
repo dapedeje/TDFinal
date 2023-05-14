@@ -782,11 +782,11 @@ df %>%
   ggpairs()
 
 ```
-Una vez tenemos esta información vamos a vizualizar las variables que tiene mucha relación.
+Una vez tenemos esta información vamos a vizualizar las variables que tiene mucha relación.Podemos ver que la presion sistolica guarda una clara relación líneal con los latidos de la madre, si esta relación no se cumple esto puede deribar en posibles enfermedades cardiacas para el niño/a.
 
 ```{r}
 #Podemos ver en este gráfico, Pb y Ps siguen una distribución líneal,
-#Esto es debido a lo dicho con anterioridad, que siempre ha de estar proporcionado
+#Esto es debido a lo dicho con anterioridad,siempre ha de estar proporcionado
 ggplot(data = df, aes(x = Ps, y = Pd)) + 
   geom_point(color = "blue") + 
   geom_smooth(method = "lm", color = "firebrick")
