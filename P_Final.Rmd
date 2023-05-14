@@ -842,5 +842,7 @@ df4 %>%
 #mismo ritmo
 
 ```
-Podemos ver que los latidos estan practicamente sincronizados esto es gracias a un efecto neuroacústico. 
+Podemos ver que los latidos estan practicamente sincronizados esto es gracias a un efecto neuroacústico.Esto es de vital importancia en el el perido de gestación del fecto. Por ejemplo, si los latidos del feto son más lentos de lo esperado, puede indicar una disminución del suministro de oxígeno al feto.
+
+
 
