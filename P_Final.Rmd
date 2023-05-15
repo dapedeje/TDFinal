@@ -732,6 +732,21 @@ ggplotly(grafico)
 ```
 
 Según la [Biblioteca Nacional de Medicina](https://medlineplus.gov/spanish/ency/article/000468.htm) los valores de la presión sistólica deben estar inferiores a 120 y la diastólica debe estar por debajo de 80. Las 2 observaciones que tienen valores, 1 tiene la presión sistólica y diastólica dentro del rango; en cambio, la otra observación si tiene una presión arterial sistólica más alta que la recomendable. Cosa la cuál le puede provocar enfermadades en un futuro.
+Cuando la presión arterial no está bien controlada, puede provocar los siguientes problemas:
+
+-   Sangrado de la aorta, el vaso sanguíneo grande que irriga el abdomen, la pelvis y las piernas.
+
+-   [Enfermedad renal crónica](https://medlineplus.gov/spanish/ency/article/000471.htm).
+
+-   Ataque al corazón e [insuficiencia cardíaca](https://medlineplus.gov/spanish/ency/article/000158.htm).
+
+-   Riego sanguíneo deficiente a las piernas.
+
+-   [Problemas con la visión](https://medlineplus.gov/spanish/ency/article/000999.htm).
+
+-   [Accidente cerebrovascular](https://medlineplus.gov/spanish/ency/patientinstructions/000341.htm).
+
+
 
 ##PREGUNTAS
 - Comparación en el ritmo cardiaco del feto y su evolución a lo largo de infancia 
