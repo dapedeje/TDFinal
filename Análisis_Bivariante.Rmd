@@ -362,7 +362,7 @@ df
 str(df)
 ```
 
-##   Comparación de latidos por minuto del feto y de la madre.
+## Comparación de latidos por minuto del feto y de la madre.
 
 ```{r}
 # Transformar los datos a formato data frame
@@ -411,4 +411,49 @@ grafico <- ggplot(data = df, aes(x = Ps, y = Pd, color = "red")) +
 ggplotly(grafico)
 ```
 
-Según la [Biblioteca Nacional de Medicina](https://medlineplus.gov/spanish/ency/article/000468.htm) los valores de la presión sistólica deben estar inferiores a 120 y la diastólica debe estar por debajo de 80. Las 2 observaciones que tienen valores, 1 tiene la presión sistólica y diastólica dentro del rango; en cambio, la otra observación si tiene una presión arterial sistólica más alta que la recomendable. Cosa la cuál le puede provocar enfermadades en un futuro.
+Según la [Biblioteca Nacional de Medicina](https://medlineplus.gov/spanish/ency/article/000468.htm) los valores de la presión sistólica deben estar inferiores a 120 y la diastólica debe estar por debajo de 80. Las 2 observaciones que tienen valores, 1 tiene la presión sistólica y diastólica dentro del rango; en cambio, la otra observación si tiene una presión arterial sistólica más alta que la recomendable.
+
+Cuando la presión arterial no está bien controlada, puede provocar los siguientes problemas:
+
+-   Sangrado de la aorta, el vaso sanguíneo grande que irriga el abdomen, la pelvis y las piernas.
+
+-   [Enfermedad renal crónica](https://medlineplus.gov/spanish/ency/article/000471.htm).
+
+-   Ataque al corazón e [insuficiencia cardíaca](https://medlineplus.gov/spanish/ency/article/000158.htm).
+
+-   Riego sanguíneo deficiente a las piernas.
+
+-   [Problemas con la visión](https://medlineplus.gov/spanish/ency/article/000999.htm).
+
+-   [Accidente cerebrovascular](https://medlineplus.gov/spanish/ency/patientinstructions/000341.htm).
+
+## Comparación entre las pulsaciones por minuto en mujeres embarazadas y mujeres no embarazadas en su rango de edad.
+
+```{r}
+data_heart <- read.csv("data/data/archive/heart.csv")
+data_dis <- read.csv("data/data/archive/Heart_Disease_Prediction.csv")
+
+cor <- data_heart %>% select(c(sex, age, thalachh)) %>% filter(sex == 0) %>% filter(age <= 45)
+
+cor2 <- data_dis %>% select(c(Sex, Age, Max.HR)) %>% filter(Sex == 0) %>% filter(Age <= 45)
+```
+
+```{r}
+
+grafico <-ggplot(df, aes(MHR)) +
+  geom_line(aes(y = MHR)) +
+  xlab("Heart Rate")
+grafico
+
+grafico1 <-ggplot(cor, aes(thalachh)) +
+  geom_line(aes(y = thalachh)) +
+  xlab("Heart Rate")
+
+grafico2 <-ggplot(cor2, aes(Max.HR)) +
+  geom_line(aes(y = Max.HR)) +
+  xlab("Heart Rate")
+
+ggplotly(grafico)
+ggplotly(grafico1)
+ggplotly(grafico2)
+```
