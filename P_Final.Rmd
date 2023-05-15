@@ -872,4 +872,14 @@ ggplot(data = df, aes(x = Pd, y = VCP)) +
   geom_smooth(method = "lm", color = "firebrick")
 ```
 
+## Comparación entre las pulsaciones por minuto en mujeres embarazadas y mujeres no embarazadas en su rango de edad.
+
+```{r}
+data_heart <- read.csv("data/data/archive/heart.csv")
+data_dis <- read.csv("data/data/archive/Heart_Disease_Prediction.csv")
+
+cor <- data_heart %>% select(c(sex, age, thalachh)) %>% filter(sex == 0) %>% filter(age <= 45)
+
+cor2 <- data_dis %>% select(c(Sex, Age, Max.HR)) %>% filter(Sex == 0) %>% filter(Age <= 45)
+```
 
