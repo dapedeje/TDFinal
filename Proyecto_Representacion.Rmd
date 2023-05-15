@@ -312,3 +312,26 @@ cor <- data_heart %>% select(c(sex, age, thalachh)) %>% filter(sex == 0) %>% fil
 cor2 <- data_dis %>% select(c(Sex, Age, Max.HR)) %>% filter(Sex == 0) %>% filter(Age <= 45)
 ```
 
+```{r}
+
+grafico <-ggplot(df, aes(MHR)) +
+  geom_line(aes(y = MHR)) +
+  xlab("Heart Rate")
+grafico
+
+grafico1 <-ggplot(cor, aes(thalachh)) +
+  geom_line(aes(y = thalachh)) +
+  xlab("Heart Rate")
+
+grafico2 <-ggplot(cor2, aes(Max.HR)) +
+  geom_line(aes(y = Max.HR)) +
+  xlab("Heart Rate")
+
+ggplotly(grafico)
+ggplotly(grafico1)
+ggplotly(grafico2)
+
+ggsave(filename = "madres_hr_grafico.jpg", plot = grafico)
+ggsave(filename = "mujeres_grafico.jpg", plot = grafico1)
+ggsave(filename = "mujeres1_grafico.jpg", plot = grafico2)
+```
