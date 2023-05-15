@@ -782,7 +782,7 @@ df %>%
   ggpairs()
 
 ```
-Una vez tenemos esta información vamos a vizualizar las variables que tiene mucha relación.Podemos ver que la presion sistolica guarda una clara relación líneal con los latidos de la madre, si esta relación no se cumple esto puede deribar en posibles enfermedades cardiacas para el niño/a.
+Una vez tenemos esta información vamos a vizualizar las variables que tiene mucha relación.Podemos ver que la presion sistolica guarda una clara relación líneal con la presion diastólica, si esta relación no se cumple esto puede deribar en posibles enfermedades cardiacas para el niño/a.
 
 ```{r}
 #Podemos ver en este gráfico, Pb y Ps siguen una distribución líneal,
@@ -790,7 +790,10 @@ Una vez tenemos esta información vamos a vizualizar las variables que tiene muc
 ggplot(data = df, aes(x = Ps, y = Pd)) + 
   geom_point(color = "blue") + 
   geom_smooth(method = "lm", color = "firebrick")
+```
+Estas dos varibles pueden tener una relacion con la variable VCP (que mide el tiempo en ms), la cual segun las correlaciones anteriormente calculadas y los siguientes gráficos.Esto puede ser un factor a considerar a la hora de determinar si el feto tendrá problemas en el futuro
 
+```{r}
 #Esto aplica también para VCP, el cual es una variable que mide el tiempo
 ggplot(data = df, aes(x = Ps, y = VCP)) + 
   geom_point(color = "blue") + 
@@ -799,7 +802,6 @@ ggplot(data = df, aes(x = Ps, y = VCP)) +
 ggplot(data = df, aes(x = Pd, y = VCP)) + 
   geom_point(color = "blue") + 
   geom_smooth(method = "lm", color = "firebrick")
-
 ```
 
 
