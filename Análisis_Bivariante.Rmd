@@ -375,8 +375,10 @@ grafico <- ggplot(data = datos, aes(x = x, y = y, color = variable)) +
   geom_line() +
   labs(x = "Latidos por minuto maternos", y = "Latidos por minuto del feto", title = "Comparación entre los latidos por minuto maternos y los fetales")
 
-ggplotly(grafico)
+grafico1 <- ggplotly(grafico)
+grafico1
 
+ggsave(filename = "madres_fetales_grafico.jpg", plot = grafico)
 tabla <-  table(df$HR1, df$MHR)
 tabla
 ```
@@ -394,6 +396,8 @@ grafico <- ggplot(data = df, aes(x = MHR, y = TOCO, color = "red")) +
   labs(x = "Latidos por minuto maternos", y = "Presión uterina", title = "Comparación entre los latidos por minuto maternos y la presión uterina")
 
 ggplotly(grafico)
+
+ggsave(filename = "madres_utero_grafico.jpg", plot = grafico)
 ```
 
 A priori se puede observar que el valor más alto de la presión uterina se relaciona con el valor más alto de los latidos por minuto maternos. Sin embargo, aunque en general se pueda observar esa relación, hay una observación la cual se sale de la norma que queremos demostrar ya que tiene unos latidos por minuto altos pero, a pesar de esto, no tiene un valor de la presión uterina elevado. Así que podemos llegar a la conclusión de que la persión uterina influye a la hora de subir los latidos por minuto maternos, pero que es un factor no la causa principal.
@@ -409,6 +413,8 @@ grafico <- ggplot(data = df, aes(x = Ps, y = Pd, color = "red")) +
   labs(x = "Presión sistólica", y = "Presión diastólica", title = "Comparación entre la presión sistólica y la diastólica")
 
 ggplotly(grafico)
+
+ggsave(filename = "sistólica_diastólica_grafico.jpg", plot = grafico)
 ```
 
 Según la [Biblioteca Nacional de Medicina](https://medlineplus.gov/spanish/ency/article/000468.htm) los valores de la presión sistólica deben estar inferiores a 120 y la diastólica debe estar por debajo de 80. Las 2 observaciones que tienen valores, 1 tiene la presión sistólica y diastólica dentro del rango; en cambio, la otra observación si tiene una presión arterial sistólica más alta que la recomendable.
@@ -456,4 +462,8 @@ grafico2 <-ggplot(cor2, aes(Max.HR)) +
 ggplotly(grafico)
 ggplotly(grafico1)
 ggplotly(grafico2)
+
+ggsave(filename = "madres_hr_grafico.jpg", plot = grafico)
+ggsave(filename = "mujeres_grafico.jpg", plot = grafico1)
+ggsave(filename = "mujeres1_grafico.jpg", plot = grafico2)
 ```
