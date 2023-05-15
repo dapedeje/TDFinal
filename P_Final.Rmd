@@ -877,6 +877,7 @@ cor <- data_heart %>% select(c(sex, age, thalachh)) %>% filter(sex == 0) %>% fil
 cor2 <- data_dis %>% select(c(Sex, Age, Max.HR)) %>% filter(Sex == 0) %>% filter(Age <= 45)
 ```
 
+
 ```{r}
 
 grafico <-ggplot(df, aes(MHR)) +
