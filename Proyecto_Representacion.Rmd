@@ -40,7 +40,6 @@ language:
 
 En este fichero vamos analizar los datos pacientes que han usado un electro cardiograma
 
-
 # Configuración del los bloques (*Chunks*)
 
 Configuramos los bloques de código.
@@ -270,6 +269,7 @@ tiempo <- CrearTiempoAna(Datos_Ana)
 Datos_Ana <- Datos_Ana %>% mutate(tiempo = tiempo)
 
 ```
+
 Ahora vamos a unirlo todo:
 
 ```{r}
@@ -335,3 +335,5 @@ ggsave(filename = "madres_hr_grafico.jpg", plot = grafico)
 ggsave(filename = "mujeres_grafico.jpg", plot = grafico1)
 ggsave(filename = "mujeres1_grafico.jpg", plot = grafico2)
 ```
+
+Cómo podemos observar en estas representaciones, los latidos máximos de las madres en las observaciones no superan los 75 ya que si estas sufren algún tipo de estrés y tienen frecuencias cardíacas altas pueden provocar problemas en el feto.
