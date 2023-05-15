@@ -741,17 +741,49 @@ y juventud.
 ```
 
 
-- Comparación entre la presión uterina y el ritmo del feto y de la madre.
+- Comparación entre la presión uterina, el ritmo cardiaco del feto y el ritmo cardiaco de la madre.
 ```{r}
-datos_comp1 <- Datos_Dig %>% gather(key = "variable", value = "value", -c("SPO2","VCP","Ps","Pd","Pm","tiempo","MHR"))
+datos_cor <- Datos_Dig %>% select(HR1,HR2,MHR,TOCO) #Nos quedamos los datos que queremos comparar
+
+#Calculamos la correlacion entre cada variable
+datos_cor %>% select(is.numeric) %>% cor(method = "spearman")
+datos_cor %>% select(is.numeric) %>% cor(method = "pearson")
+
+#Lo representamos graficamente para verlo mas claro
+datos_cor %>% ggcorr(label= T )
+
+
+```
+
+Vemos que no hay ninguna variable que tenga una correlacion visible. Aunque esto nos puede sorprender, ya que lo mas intuitivo seria pensar que estas variables estan relacionadas unas con otras, esto tiene sentido. 
+
+Es correcto decir que estan relacionadas, por ejemplo:
+
+-El ritmo cardiaco del feto y de la madre estan relacionados con la actividad uteria.  
+-El ritmo cardiaco fetal esta relacionado con el ritmo cardiaco de la madre.
+
+Pero si bien es cierto que estan relacionadas, ¿Porque al calcular la correlacion no obtenemos los resultados esperados?
+La clave de todo esto esta en que, una variable no depende de la otra de forma directa y exclusiva. Hay muchos factores que intervienen en estas variables. Por ejemplo, el ritmo cardiaco del feto y de la madre no dependen exclusivamente de la actividad uterina. Hay muchos mas factores que los pueden hacer cambiar, como el estado del feto y de la madre, la actividad fisica, a posición del feto en el útero, el estrés, etc.
+
+Por ultimo representaremos las graficas de las diferentes variables que deberian estar relacionadas, para observar posibles patrones.
+
+```{r}
+datos_comp1 <- Datos_Dig %>% gather(key = "variable", value = "value", -c("SPO2","VCP","Ps","Pd","Pm","tiempo","MHR","HR2"))
+datos_comp1 <- datos_comp1 %>% filter(value>0)
 ggplot(datos_comp1, aes(x = tiempo, y = value, color = variable)) +
   geom_line()
 
 datos_comp2 <- Datos_Dig %>% gather(key = "variable", value = "value", -c("SPO2","VCP","Ps","Pd","Pm","tiempo","HR1","HR2"))
+datos_comp2 <- datos_comp2 %>% filter(value>0)
 ggplot(datos_comp2, aes(x = tiempo, y = value, color = variable)) +
   geom_line()
 
+datos_comp3 <- Datos_Dig %>% gather(key = "variable", value = "value", -c("SPO2","VCP","Ps","Pd","Pm","tiempo","TOCO","HR2"))
+datos_comp3 <- datos_comp3 %>% filter(value>0)
+ggplot(datos_comp3, aes(x = tiempo, y = value, color = variable)) +
+  geom_line()
 ```
+Podemos llegar a ver cierto patrones segun el paciente que tomemos. Por ejemplo, si sube la presion uterina la respuesta natural seria una disminucion del ritmo cardiaco del feto. Esto es visible en algunos momentos de subida de presion en las graficas, pero como hemos comentado antes, no es algo exacto y reciproco, es decir, que se altere una no tiene porque obligar estrictamente a que se altere la otra.
 
 
 - Comparar con datos exteriores.
