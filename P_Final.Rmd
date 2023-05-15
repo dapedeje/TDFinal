@@ -801,48 +801,5 @@ ggplot(data = df, aes(x = Pd, y = VCP)) +
   geom_smooth(method = "lm", color = "firebrick")
 
 ```
-```{r}
-#Ahora vamos a ver si existe alguna clase de realción entre las varibles, para los
-#df de pacientes que estan embarazadas las cuales son el paciente 4 y 6
-df4 <- Pas4[[2]]
-df6 <- Pas6[[2]]
-
-#Veremos si existe alguna correalación entre las varibles usando pearson y spearman
-#Por el momento si usamos pearson podemos ver que de momento no hay ninguna relación líneal entre las varibles
-df4 %>%
-  drop_na() %>%
-  cor(method = "pearson")
-#Pero si hacemos uso de otro metodo vemos que HR2 y HR1 guaradan una relación del 0.80
-df4 %>%
-  drop_na() %>%
-  cor(method = "spearman")
-```
-Ahora haremos gráfico para las variables que tienen una correlación alta:
-```{r}
-
-df6 %>%
-  pivot_longer(cols = c("HR1","HR2"),names_to = "Latidos", values_to = "Valor") %>%
-  ggplot(aes(x = Latidos, y = Valor, color = Latidos)) + geom_boxplot()
-
-
-df6 %>%
-  drop_na(HR2) %>%
-  cor(method = "pearson")
-#Vemos que la relación se repite
-df6 %>%
-  drop_na(c("HR2","HR1")) %>%
-  cor(method = "spearman")
-
-df4 %>%
-  pivot_longer(cols = c("HR1","HR2"),names_to = "Latidos", values_to = "Valor") %>%
-  ggplot(aes(x = Latidos, y = Valor, color = Latidos)) + 
-  geom_boxplot()
-
-#Como conclución es muy interesante, ya que siempre los latidos de la madre y los del hijo deben ir a más o menos el 
-#mismo ritmo
-
-```
-Podemos ver que los latidos estan practicamente sincronizados esto es gracias a un efecto neuroacústico.Esto es de vital importancia en el el perido de gestación del fecto. Por ejemplo, si los latidos del feto son más lentos de lo esperado, puede indicar una disminución del suministro de oxígeno al feto.
-
 
 
