@@ -1,6 +1,6 @@
 ---
 title: "Trabajo final"
-author: "Equipo H"
+author: "López Llorens Sandra,Pascual Sivera Carles, Pedroza De Jesús David Alejandro, Piquero Moreno Víctor "
 date: "`r Sys.Date()`"
 output:
   html_document:
