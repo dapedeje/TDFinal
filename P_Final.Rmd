@@ -76,7 +76,7 @@ Tenemos esta parte para instalar los paquetes necesarios si es que el usuario no
 
 # Especificamos las librerías necesarias en esta lista
 
-packages = c("tidyverse","knitr","plotly","GGally")
+packages = c("tidyverse","knitr","plotly","GGally","ggcorrplot")
 
 #use this function to check if each package is on the local machine
 #if a package is installed, it will be loaded
@@ -750,9 +750,9 @@ datos_cor %>% select(is.numeric) %>% cor(method = "spearman")
 datos_cor %>% select(is.numeric) %>% cor(method = "pearson")
 
 #Lo representamos graficamente para verlo mas claro
-datos_cor %>% ggcorr(label= T )
+datos_cor <- datos_cor %>% select(is.numeric) %>% cor(method = "spearman")
 
-
+ggcorrplot(datos_cor, lab = TRUE)
 ```
 
 Vemos que no hay ninguna variable que tenga una correlacion visible. Aunque esto nos puede sorprender, ya que lo mas intuitivo seria pensar que estas variables estan relacionadas unas con otras, esto tiene sentido. 
@@ -769,27 +769,41 @@ Por ultimo representaremos las graficas de las diferentes variables que deberian
 
 ```{r}
 datos_comp1 <- Datos_Dig %>% gather(key = "variable", value = "value", -c("SPO2","VCP","Ps","Pd","Pm","tiempo","MHR","HR2"))
-datos_comp1 <- datos_comp1 %>% filter(value>0)
 ggplot(datos_comp1, aes(x = tiempo, y = value, color = variable)) +
   geom_line()
 
 datos_comp2 <- Datos_Dig %>% gather(key = "variable", value = "value", -c("SPO2","VCP","Ps","Pd","Pm","tiempo","HR1","HR2"))
-datos_comp2 <- datos_comp2 %>% filter(value>0)
 ggplot(datos_comp2, aes(x = tiempo, y = value, color = variable)) +
   geom_line()
 
 datos_comp3 <- Datos_Dig %>% gather(key = "variable", value = "value", -c("SPO2","VCP","Ps","Pd","Pm","tiempo","TOCO","HR2"))
-datos_comp3 <- datos_comp3 %>% filter(value>0)
 ggplot(datos_comp3, aes(x = tiempo, y = value, color = variable)) +
   geom_line()
 ```
 Podemos llegar a ver cierto patrones segun el paciente que tomemos. Por ejemplo, si sube la presion uterina la respuesta natural seria una disminucion del ritmo cardiaco del feto. Esto es visible en algunos momentos de subida de presion en las graficas, pero como hemos comentado antes, no es algo exacto y reciproco, es decir, que se altere una no tiene porque obligar estrictamente a que se altere la otra.
 
 
-- Comparar con datos exteriores.
+- Comparamos la variable HR1 y HR2 para confirmar unas buenas medidas
 ```{r}
+datos_comparacion <- Datos_Dig %>% select(HR1,HR2) #Nos quedamos los datos que queremos comparar
+
+#Calculamos la correlacion entre cada variable
+datos_comparacion <- datos_comparacion %>% select(is.numeric) %>% cor(method = "spearman")
+
+#Lo representamos graficamente para verlo mas claro
+ggcorrplot(datos_comparacion, lab = TRUE)
 
 ```
+Podemos ver que hay una correlacion entre los datos de HR1 y HR2. Esto debe se ser asi ya que las dos variables miden los mismos datos(el ritmo cardiaco del feto), solo que por dos canales diferentes, por eso aparece por duplicado.
+
+Ahora representamos graficamente las dos variables para verificar visualmente que siguen el mismo patron.
+
+```{r}
+datos_comp <- Datos_Dig %>% gather(key = "variable", value = "value", -c("SPO2","VCP","Ps","Pd","Pm","tiempo","TOCO","MHR"))
+ggplot(datos_comp, aes(x = tiempo, y = value, color = variable)) +
+  geom_line()
+```
+Vemos que ambas variables coinciden perfectamente. Por lo que las medidas de los dos canales estan perfectamente tomadas y son fiables.
 
 
 - Con los datos aportados, comparar la posibilidad de desarrollar enfermedades.
